@@ -13,11 +13,11 @@ import { Separator } from "../ui/separator";
 import Cart from "../Cart";
 import { useUser } from "@/store/useUser";
 import Navbar from "./Navbar";
+import { NavHead } from "./NavHead";
 
 export const Header = () => {
   const { theme, setTheme } = useTheme();
   const [isClient, setIsClient] = useState<boolean>(false);
-  const user = useUser((state) => state.userInfo);
 
   const { getCurrentUser } = useUser();
 
@@ -46,6 +46,7 @@ export const Header = () => {
 
   return (
     <>
+      <NavHead />
       <div className="sticky z-50 top-0 inset-x-0 bg-white dark:bg-[#020817]">
         <MaxWidthWrapper>
           <div className="relative  flex h-16 items-center justify-between w-full">
@@ -91,33 +92,6 @@ export const Header = () => {
                 {isClient && <Cart />}
                 <span className="sr-only">Shopping Cart</span>
               </div>
-              <div className="hidden md:flex h-full">
-                {user ? null : (
-                  <Link
-                    href="/login"
-                    className={buttonVariants({ variant: "ghost" })}
-                  >
-                    Sign in
-                  </Link>
-                )}
-                {user ? null : (
-                  <Separator orientation="vertical" className="h-[40px]" />
-                )}
-
-                {user ? (
-                  <ProfileButton imageUrl={user?.imageUrl} />
-                ) : (
-                  <Link
-                    href="/register"
-                    className={buttonVariants({
-                      variant: "ghost",
-                    })}
-                  >
-                    Create account
-                  </Link>
-                )}
-              </div>
-              {/* <ProfileButton /> */}
             </div>
           </div>
         </MaxWidthWrapper>

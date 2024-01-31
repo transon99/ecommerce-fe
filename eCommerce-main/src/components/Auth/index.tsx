@@ -1,10 +1,10 @@
 "use client";
 import { SessionProvider } from "next-auth/react";
 import "react-toastify/dist/ReactToastify.css";
-import { Footer } from "../Footer";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Header } from "../Header";
 import { ToastContainer } from "react-toastify";
+import Footer from "../Footer";
 
 const Auth = ({ children }: { children: React.ReactNode }) => {
   return (

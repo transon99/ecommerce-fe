@@ -13,6 +13,14 @@ interface LoginResquest {
   password: string;
 }
 
+interface RegisterResquest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
 interface SocialLoginResquest {
   socialAccessToken: string;
 }

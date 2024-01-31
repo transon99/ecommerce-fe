@@ -69,8 +69,8 @@ const heroData: string[] = ["", "", ""];
 export default function Home() {
   return (
     <>
-      <Hero urls={heroData} />
       <MaxWidthWrapper>
+        <Hero urls={heroData} />
         <ProductReel
           title="Featured Products"
           href="/collections/featured"
