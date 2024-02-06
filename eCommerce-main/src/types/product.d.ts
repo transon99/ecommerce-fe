@@ -2,10 +2,16 @@ interface Product {
   id: string;
   name: string;
   description: string;
-  sku: string;
-  price: number;
-  quantity: number;
-  brand: Brand;
   category: Category;
-  imageUrls: string[];
+  brand: Brand;
+  imageUrls: ImageUrl[];
+  price: number;
+  salePrice: number;
+  quantity: number;
+  rate: number;
+}
+
+interface ImageUrl {
+  id: string;
+  thumbnailUrl: string;
 }

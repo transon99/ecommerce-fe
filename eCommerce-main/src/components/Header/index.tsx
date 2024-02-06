@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState } from "react";
-import { Menu, Moon, ShoppingCart, Sun } from "lucide-react";
+import React, { useEffect, useState } from 'react';
+import { Menu, Moon, ShoppingCart, Sun } from 'lucide-react';
 
-import MaxWidthWrapper from "../ui/MaxWidthWrapper";
-import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import { useTheme } from "next-themes";
-import Link from "next/link";
-import { Button, buttonVariants } from "../ui/button";
-import ProfileButton from "../ProfileButton";
-import { Separator } from "../ui/separator";
-import Cart from "../Cart";
-import { useUser } from "@/store/useUser";
-import Navbar from "./Navbar";
-import { NavHead } from "./NavHead";
+import MaxWidthWrapper from '../ui/MaxWidthWrapper';
+import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
+import { useTheme } from 'next-themes';
+import Link from 'next/link';
+import { Button, buttonVariants } from '../ui/button';
+import ProfileButton from '../ProfileButton';
+import { Separator } from '../ui/separator';
+// import Cart from "../Cart";
+import { useUser } from '@/store/useUser';
+import Navbar from './Navbar';
+import { NavHead } from './NavHead';
 
 export const Header = () => {
   const { theme, setTheme } = useTheme();
@@ -31,16 +31,16 @@ export const Header = () => {
 
   const routes = [
     {
-      href: "/",
-      label: "Products",
+      href: '/',
+      label: 'Products',
     },
     {
-      href: "/",
-      label: "Categories",
+      href: '/',
+      label: 'Categories',
     },
     {
-      href: "/",
-      label: "On Sale",
+      href: '/',
+      label: 'On Sale',
     },
   ];
 
@@ -79,7 +79,7 @@ export const Header = () => {
                 variant="ghost"
                 size="icon"
                 aria-label="Toggle Theme"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               >
                 <Sun className="h-6 w-6 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
                 <Moon className="absolute h-6 w-6 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
@@ -89,7 +89,7 @@ export const Header = () => {
                 className=" hover:bg-slate-200 rounded-full p-1"
                 aria-label="Shopping Cart"
               >
-                {isClient && <Cart />}
+                {/* {isClient && <Cart />} */}
                 <span className="sr-only">Shopping Cart</span>
               </div>
             </div>

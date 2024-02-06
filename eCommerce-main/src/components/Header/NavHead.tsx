@@ -1,15 +1,15 @@
-"use client";
-import Link from "next/link";
-import MaxWidthWrapper from "../ui/MaxWidthWrapper";
-import Navbar from "./Navbar";
-import ProfileButton from "../ProfileButton";
-import { Separator } from "@radix-ui/react-separator";
-import { useUser } from "@/store/useUser";
-import { Button, buttonVariants } from "../ui/button";
-import { FaFacebookF } from "react-icons/fa";
-import { FaTwitter } from "react-icons/fa";
-import { FaGoogle } from "react-icons/fa";
-import { FaInstagram } from "react-icons/fa";
+'use client';
+import Link from 'next/link';
+import MaxWidthWrapper from '../ui/MaxWidthWrapper';
+import Navbar from './Navbar';
+import ProfileButton from '../ProfileButton';
+import { Separator } from '@radix-ui/react-separator';
+import { useUser } from '@/store/useUser';
+import { Button, buttonVariants } from '../ui/button';
+import { FaFacebookF } from 'react-icons/fa';
+import { FaTwitter } from 'react-icons/fa';
+import { FaGoogle } from 'react-icons/fa';
+import { FaInstagram } from 'react-icons/fa';
 
 export const NavHead = () => {
   const user = useUser((state) => state.userInfo);
@@ -28,7 +28,7 @@ export const NavHead = () => {
                 {user ? null : (
                   <Link
                     href="/login"
-                    className={buttonVariants({ variant: "ghost" })}
+                    className={buttonVariants({ variant: 'ghost' })}
                   >
                     Sign in
                   </Link>
@@ -46,7 +46,7 @@ export const NavHead = () => {
                   <Link
                     href="/register"
                     className={buttonVariants({
-                      variant: "ghost",
+                      variant: 'ghost',
                     })}
                   >
                     Create account
