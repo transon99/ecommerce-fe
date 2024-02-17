@@ -2,7 +2,7 @@ import DataTable from '@/components/Table/DataTable'
 import { GridColDef } from '@mui/x-data-grid'
 import { userRows } from '../../data'
 import { Text } from '@radix-ui/themes'
-import EditUserDialog from '@/components/Dialog/EditUserDialog'
+import EditUserDialog from '@/components/Dialog/EditDialog/EditUserDialog'
 import { useEffect, useState } from 'react'
 import userApi from '@/apis/userApi'
 

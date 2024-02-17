@@ -1,4 +1,5 @@
 import bannerApi from '@/apis/bannerApi'
+import NullData from '@/components/NullData'
 import { AddBannerDialog } from '@/components/Dialog'
 import { DataTable } from '@/components/Table'
 import { GridColDef } from '@mui/x-data-grid'
@@ -76,7 +77,11 @@ lg:items-center lg:gap-4 '
               </div>
             </div>
             <div className='mt-5 rounded-xl'>
-              <DataTable slug='branners' columns={columns} rows={data} editBtn={editBanner} />
+              {data.length === 0 ? (
+                <NullData title="DON'T HAVE ANY BANNER YET" />
+              ) : (
+                <DataTable slug='branners' columns={columns} rows={data} editBtn={editBanner} />
+              )}
             </div>
           </div>
         </div>

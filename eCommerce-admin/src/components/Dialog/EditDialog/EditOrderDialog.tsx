@@ -15,10 +15,10 @@ import ListBox from '@/components/Input/ListBox'
 import { API_URL_CATEGORY, API_URL_PRODUCT } from '@/constant/apiConstant'
 import { Button } from '@radix-ui/themes'
 import { Controller, useForm } from 'react-hook-form'
-import FileInput from '../Input/FileInputSingle'
-import { Input } from '../Input/Input'
-import CustomButton from '../common/CustomButton'
-import './index.css'
+import FileInput from '../../Input/FileInputSingle'
+import { Input } from '../../Input/Input'
+import CustomButton from '../../common/CustomButton'
+import '../index.css'
 
 interface PropTypes {
   varient: string

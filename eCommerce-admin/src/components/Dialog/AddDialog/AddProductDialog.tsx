@@ -14,28 +14,18 @@ import axiosClient from '@/axios/axiosClient'
 import ListBox from '@/components/Input/ListBox'
 import { API_URL_CATEGORY, API_URL_PRODUCT } from '@/constant/apiConstant'
 import { Button } from '@radix-ui/themes'
-import { Controller, useForm } from 'react-hook-form'
-import FileInput from '../Input/FileInputSingle'
-import { Input } from '../Input/Input'
-import CustomButton from '../common/CustomButton'
-import './index.css'
-import ActionBtn from '../ActionBtn'
-import { MdEdit } from 'react-icons/md'
-import FileInputMutiple from '../Input/FileInputMutiple'
+import { Controller, FieldValues, useForm } from 'react-hook-form'
+import FileInputMutiple from '../../Input/FileInputMutiple'
+import { Input } from '../../Input/Input'
+import CustomButton from '../../common/CustomButton'
+import '../index.css'
+import TextArea from '@/components/Input/TextArea'
 
 interface PropTypes {
   varient: string
   dataProps?: Product
   categoriesData?: Category[]
   brandsData?: Brand[]
-}
-
-interface InputProps {
-  textProps: string
-}
-
-const TextH = ({ textProps }: InputProps) => {
-  return <p className='text-primary my-2'>{textProps}</p>
 }
 
 const AddProductDialog = ({ varient, dataProps, categoriesData, brandsData }: PropTypes) => {
@@ -52,45 +42,15 @@ const AddProductDialog = ({ varient, dataProps, categoriesData, brandsData }: Pr
     setOpen(false)
   }
 
-  const { register, handleSubmit, control } = useForm()
-
-  const handleEditProduct = async (data: any, dataProps: Category | undefined) => {
-    console.log('dataPro', dataProps)
-    console.log('data:', data)
-    const reqConfig: CategoryRequest = {
-      name: data.name
-    }
-    const formData = new FormData()
-    formData.append('data', JSON.stringify(reqConfig))
-    formData.append('image', data.imageUrl[0])
-    console.log('Form data', [...formData])
-    setIsLoading(true)
-    const result: responseType = await axiosClient.put(`${API_URL_CATEGORY}/${dataProps?.id}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    })
-    setIsLoading(false)
-
-    if (result.status === 'OK') {
-      Swal.fire({
-        title: 'Congratulations !',
-        text: result.message,
-        icon: 'success',
-        showCloseButton: true,
-        confirmButtonText: 'Close'
-      }).then(({ isConfirmed }) => {
-        if (isConfirmed) {
-          handleClose()
-          window.location.reload()
-        }
-      })
-    } else {
-      toast.error(result.message)
-    }
-  }
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors }
+  } = useForm<FieldValues>({})
 
   const handleAddProduct = async (data: any) => {
+    console.log(data)
     const reqConfig: ProductRequest = {
       name: data.productName,
       description: data.description,
@@ -158,48 +118,60 @@ const AddProductDialog = ({ varient, dataProps, categoriesData, brandsData }: Pr
         </DialogTitle>
         <DialogContent className='bg-[#171F29] '>
           <p className='text-primary'>Product Setting</p>
+          <hr className='bg-slate-300 w-full h-px' />
           <form
             className=''
             onSubmit={handleSubmit((data) => {
-              varient === 'ADD' ? handleAddProduct(data) : handleEditProduct(data, dataProps)
               handleAddProduct(data)
             })}
           >
-            <div className='gap-5'>
+            <div className='flex flex-col gap-5'>
               <div>
-                <TextH textProps='Product Name' />
                 <Input
-                  name='productName'
+                  id='productName'
                   register={register}
                   type='text'
-                  defaulValue={dataProps?.name}
                   placeholder='Enter product name...'
+                  lable='Product Name'
+                  errors={errors}
                 />
               </div>
               <div>
-                <TextH textProps='Description' />
-                <textarea
+                {/* <textarea
                   id='message'
                   rows={4}
                   defaultValue={dataProps?.description}
                   className='block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                   placeholder='Write description here...'
                   {...register('description')}
-                ></textarea>
+                ></textarea> */}
+                <TextArea
+                  id='description'
+                  errors={errors}
+                  register={register}
+                  lable='Description'
+                  disabled={isLoading}
+                  value={dataProps?.description}
+                  required
+                />
               </div>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                 <div className='w-full'>
-                  <TextH textProps='Brand Name' />
                   <Controller
                     name='brand'
                     control={control}
                     render={({ field }) => (
-                      <ListBox field={field} data={brandsData} name='Brand' defaultValue={dataProps?.brand?.name} />
+                      <ListBox
+                        field={field}
+                        data={brandsData}
+                        name='Brand'
+                        value={dataProps?.brand?.name}
+                        lable='Brand'
+                      />
                     )}
                   />
                 </div>
                 <div className='w-full'>
-                  <TextH textProps='Category Name' />
                   <Controller
                     name='category'
                     control={control}
@@ -208,7 +180,8 @@ const AddProductDialog = ({ varient, dataProps, categoriesData, brandsData }: Pr
                         field={field}
                         data={categoriesData}
                         name='Category'
-                        defaultValue={dataProps?.category?.name}
+                        value={dataProps?.category?.name}
+                        lable='Category'
                       />
                     )}
                   />
@@ -217,45 +190,49 @@ const AddProductDialog = ({ varient, dataProps, categoriesData, brandsData }: Pr
 
               <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                 <div className='w-full'>
-                  <TextH textProps='Regular Price' />
                   <Input
-                    name='price'
+                    id='price'
                     register={register}
                     type='number'
-                    defaulValue={dataProps?.priceUnit}
+                    value={dataProps?.priceUnit}
                     placeholder='Enter the price...'
+                    errors={errors}
+                    lable='Regular Price'
                   />
                 </div>
                 <div className='w-full'>
-                  <TextH textProps='Discount' />
                   <Input
-                    name='discount'
+                    id='discount'
                     register={register}
                     type='number'
-                    defaulValue={dataProps?.discount}
+                    value={dataProps?.discount}
                     placeholder='Enter the discount...'
+                    errors={errors}
+                    lable='Discount'
                   />
                 </div>
               </div>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                 <div className='w-full'>
-                  <TextH textProps='SKU' />
                   <Input
-                    name='sku'
+                    id='sku'
                     register={register}
                     type='text'
-                    defaulValue={dataProps?.sku}
+                    value={dataProps?.sku}
                     placeholder='Enter the sku code...'
+                    errors={errors}
+                    lable='SKU'
                   />
                 </div>
                 <div className='w-full'>
-                  <TextH textProps='Quantity in Stock' />
                   <Input
-                    name='quantity'
+                    id='quantity'
                     register={register}
                     type='number'
-                    defaulValue={dataProps?.quantity}
+                    value={dataProps?.quantity}
                     placeholder='Enter the quantity...'
+                    errors={errors}
+                    lable='Quantity in Stock'
                   />
                 </div>
               </div>

@@ -13,12 +13,11 @@ import { Button } from '@radix-ui/themes'
 import { Fragment, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { MdEdit } from 'react-icons/md'
-import ActionBtn from '../ActionBtn'
-import FileInput from '../Input/FileInputSingle'
-import { Input } from '../Input/Input'
-import CustomButton from '../common/CustomButton'
-import './index.css'
-import FileInputMutiple from '../Input/FileInputMutiple'
+import ActionBtn from '../../ActionBtn'
+import { Input } from '../../Input/Input'
+import CustomButton from '../../common/CustomButton'
+import '../index.css'
+import FileInputMutiple from '../../Input/FileInputMutiple'
 
 interface PropTypes {
   varient: string

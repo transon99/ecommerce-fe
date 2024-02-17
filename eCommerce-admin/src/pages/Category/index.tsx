@@ -4,6 +4,7 @@ import { AddCategoryDialog } from '@/components/Dialog'
 import categoryApi from '@/apis/categoryApi'
 import { GridColDef } from '@mui/x-data-grid'
 import DataTable from '@/components/Table/DataTable'
+import NullData from '@/components/NullData'
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', width: 220 },
@@ -84,7 +85,11 @@ const CategoryPage = () => {
           </Text>
         </div>
         <div className='mt-5 rounded-xl'>
-          <DataTable slug='category' columns={columns} rows={data} editBtn={editCategory} />
+          {data.length === 0 ? (
+            <NullData title="DON'T HAVE ANY CATEGORY YET" />
+          ) : (
+            <DataTable slug='brands' columns={columns} rows={data} editBtn={editCategory} />
+          )}
         </div>
       </div>
     </div>

@@ -13,11 +13,11 @@ import ListBox from '@/components/Input/ListBox'
 import { API_URL_CATEGORY, API_URL_PRODUCT } from '@/constant/apiConstant'
 import { Button } from '@radix-ui/themes'
 import { Controller, useForm } from 'react-hook-form'
-import FileInput from '../Input/FileInputSingle'
-import { Input } from '../Input/Input'
-import CustomButton from '../common/CustomButton'
-import './index.css'
-import ActionBtn from '../ActionBtn'
+import FileInput from '../../Input/FileInputSingle'
+import { Input } from '../../Input/Input'
+import CustomButton from '../../common/CustomButton'
+import '../index.css'
+import ActionBtn from '../../ActionBtn'
 import { MdEdit } from 'react-icons/md'
 
 interface PropTypes {
@@ -49,7 +49,7 @@ const EditUserDialog = ({ varient, dataProps }: PropTypes) => {
 
   const { register, handleSubmit, control } = useForm()
 
-  const handleEditProduct = async (data: any, dataProps: Category | undefined) => {
+  const handleEditProduct = async (data: any, dataProps: User | undefined) => {
     console.log('dataPro', dataProps)
     console.log('data:', data)
     const reqConfig: CategoryRequest = {
@@ -85,59 +85,10 @@ const EditUserDialog = ({ varient, dataProps }: PropTypes) => {
     }
   }
 
-  const handleAddProduct = async (data: any) => {
-    const reqConfig: ProductRequest = {
-      name: data.productName,
-      description: data.description,
-      sku: data.sku,
-      priceUnit: data.price,
-      brandId: data.brand,
-      quantity: data.quantity,
-      categoryId: data.category,
-      discount: data.discount
-    }
-    const formData = new FormData()
-    formData.append('data', JSON.stringify(reqConfig))
-    for (var x = 0; x < data.imageUrls.length; x++) {
-      formData.append('images', data.imageUrls[x])
-    }
-    setIsLoading(true)
-    const result: responseType = await axiosClient.post(API_URL_PRODUCT, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    })
-    setIsLoading(false)
-
-    if (result.status === 'OK') {
-      Swal.fire({
-        title: 'Congratulations !',
-        text: result.message,
-        icon: 'success',
-        showCloseButton: true,
-        confirmButtonText: 'Close'
-      }).then(({ isConfirmed }) => {
-        if (isConfirmed) {
-          handleClose()
-          window.location.reload()
-        }
-      })
-    } else {
-      toast.error(result.message)
-    }
-  }
-
   return (
     <React.Fragment>
       <div onClick={handleClickOpen}>
-        {varient === 'ADD' ? (
-          <Button size='3' radius='full' className='w-full !cursor-pointer hover:bg-[#263E7B] bg-[#2f62ff3c] '>
-            Add new product
-            <PiPlusCircleBold />
-          </Button>
-        ) : (
-          <ActionBtn icon={MdEdit} />
-        )}
+        <ActionBtn icon={MdEdit} />
       </div>
       <Dialog fullScreen={fullScreen} open={open} onClose={handleClose} aria-labelledby='responsive-dialog-title'>
         <DialogTitle id='responsive-dialog-title' className='bg-[#171F29] text-primary' style={{ fontWeight: 'bold' }}>
@@ -148,82 +99,66 @@ const EditUserDialog = ({ varient, dataProps }: PropTypes) => {
           <form
             className=''
             onSubmit={handleSubmit((data) => {
-              varient === 'ADD' ? handleAddProduct(data) : handleEditProduct(data, dataProps)
-              handleAddProduct(data)
+              handleEditProduct(data, dataProps)
             })}
           >
             <div className='gap-5'>
-              <div>
-                <TextH textProps='Product Name' />
-                <Input
-                  name='productName'
-                  register={register}
-                  type='text'
-                  defaulValue={dataProps?.name}
-                  placeholder='Enter product name...'
-                />
-              </div>
-              <div>
-                <TextH textProps='Description' />
-                <textarea
-                  id='message'
-                  rows={4}
-                  defaultValue={dataProps?.description}
-                  className='block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                  placeholder='Write description here...'
-                  {...register('description')}
-                ></textarea>
-              </div>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                 <div className='w-full'>
-                  <TextH textProps='Brand Name' />
-                  <Controller
-                    name='brand'
-                    control={control}
-                    render={({ field }) => (
-                      <ListBox field={field} data={brandsData} name='Brand' defaultValue={dataProps?.brand?.name} />
-                    )}
+                  <TextH textProps='First Name' />
+                  <Input
+                    name='firstName'
+                    register={register}
+                    type='text'
+                    value={dataProps?.firstName}
+                    placeholder='Enter first name...'
                   />
                 </div>
                 <div className='w-full'>
-                  <TextH textProps='Category Name' />
-                  <Controller
-                    name='category'
-                    control={control}
-                    render={({ field }) => (
-                      <ListBox
-                        field={field}
-                        data={categoriesData}
-                        name='Category'
-                        defaultValue={dataProps?.category?.name}
-                      />
-                    )}
+                  <TextH textProps='Last Name' />
+                  <Input
+                    name='lastName'
+                    register={register}
+                    type='text'
+                    value={dataProps?.lastName}
+                    placeholder='Enter lastName...'
                   />
                 </div>
               </div>
 
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                <div className='w-full'>
-                  <TextH textProps='Regular Price' />
-                  <Input
-                    name='price'
-                    register={register}
-                    type='number'
-                    defaulValue={dataProps?.priceUnit}
-                    placeholder='Enter the price...'
-                  />
-                </div>
-                <div className='w-full'>
-                  <TextH textProps='Discount' />
-                  <Input
-                    name='discount'
-                    register={register}
-                    type='number'
-                    defaulValue={dataProps?.discount}
-                    placeholder='Enter the discount...'
-                  />
-                </div>
+              <div>
+                <TextH textProps='Email' />
+                <Input
+                  name='email'
+                  register={register}
+                  type='text'
+                  value={dataProps?.email}
+                  placeholder='Enter email...'
+                />
               </div>
+
+              <div>
+                <TextH textProps='Phone' />
+                <Input
+                  name='phone'
+                  register={register}
+                  type='text'
+                  value={dataProps?.phone}
+                  placeholder='Enter phone number...'
+                />
+              </div>
+
+              <div>
+                <TextH textProps='Address' />
+                <Input
+                  name='address'
+                  register={register}
+                  type='text'
+                  value={dataProps?.addresses}
+                  placeholder='Enter email...'
+                />
+              </div>
+
               <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                 <div className='w-full'>
                   <TextH textProps='SKU' />

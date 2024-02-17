@@ -1,29 +1,30 @@
-// import { Button, Flex } from '@radix-ui/themes'
 import { PiPlusCircleBold } from 'react-icons/pi'
-// import * as Dialog from '@radix-ui/react-dialog'
 import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import * as React from 'react'
 import { toast } from 'react-toastify'
 import Swal from 'sweetalert2'
 
-import { API_URL_BRAND, API_URL_CATEGORY } from '@/constant/apiConstant'
+import { API_URL_CATEGORY } from '@/constant/apiConstant'
 import { Button } from '@radix-ui/themes'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { MdEdit } from 'react-icons/md'
-import ActionBtn from '../ActionBtn'
-import FileInput from '../Input/FileInputSingle'
-import { Input } from '../Input/Input'
-import CustomButton from '../common/CustomButton'
-import './index.css'
+import ActionBtn from '../../ActionBtn'
+import { Input } from '../../Input/Input'
+import CustomButton from '../../common/CustomButton'
+import '../index.css'
 import axiosClient from '@/axios/axiosClient'
+import { ListBox } from '../..'
+import { Fragment, useEffect, useState } from 'react'
+import categoryApi from '@/apis/categoryApi'
+import FileInputMutiple from '../../Input/FileInputMutiple'
+import FileInputSingle from '../../Input/FileInputSingle'
 
 interface PropTypes {
   varient: string
-  dataProps?: Brand
+  dataProps?: Category
 }
 
 interface InputProps {
@@ -34,11 +35,24 @@ const TextH = ({ textProps }: InputProps) => {
   return <p className='text-primary my-2'>{textProps}</p>
 }
 
-const AddBrandDiaglog = ({ varient, dataProps }: PropTypes) => {
-  const [open, setOpen] = React.useState(false)
-  const [isLoading, setIsLoading] = React.useState(false)
+const AddCategoryDialog = ({ varient, dataProps }: PropTypes) => {
+  const [open, setOpen] = useState(false)
+  const [baseCategories, setBaseCategories] = useState<any[]>()
+  const [isLoading, setIsLoading] = useState(false)
   const theme = useTheme()
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'))
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await categoryApi.getBaseCategory()
+        setBaseCategories(response.data)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
+    }
+    fetchData()
+  }, [])
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -48,20 +62,21 @@ const AddBrandDiaglog = ({ varient, dataProps }: PropTypes) => {
     setOpen(false)
   }
 
-  const { register, handleSubmit } = useForm()
+  const { register, handleSubmit, control } = useForm()
 
-  const handleEditBrand = async (data: any, dataProps: Brand | undefined) => {
-    console.log('dataPro', dataProps)
+  const handleEditCategory = async (data: any, dataProps: Category | undefined) => {
     console.log('data:', data)
-    const reqConfig: BrandRequest = {
-      name: data.name
+    const reqConfig: CategoryRequest = {
+      name: data.name,
+      parentCatId: data.baseCategory ? data.baseCategory : ''
     }
     const formData = new FormData()
     formData.append('data', JSON.stringify(reqConfig))
     formData.append('image', data.imageUrl[0])
-    console.log('Form data', [...formData])
+    formData.append('icon', data.iconUrl[0])
+    console.log([...formData])
     setIsLoading(true)
-    const result: responseType = await axiosClient.put(`${API_URL_BRAND}/${dataProps?.id}`, formData, {
+    const result: responseType = await axiosClient.put(`${API_URL_CATEGORY}/${dataProps?.id}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -86,15 +101,17 @@ const AddBrandDiaglog = ({ varient, dataProps }: PropTypes) => {
     }
   }
 
-  const handleAddBrand = async (data: any) => {
-    const reqConfig: BrandRequest = {
-      name: data.name
+  const handleAddCategory = async (data: any) => {
+    const reqConfig: CategoryRequest = {
+      name: data.name,
+      parentCatId: data.baseCategory ? data.baseCategory : ''
     }
     const formData = new FormData()
     formData.append('data', JSON.stringify(reqConfig))
     formData.append('image', data.imageUrl[0])
+    formData.append('icon', data.iconUrl[0])
     setIsLoading(true)
-    const result: responseType = await axiosClient.post(API_URL_BRAND, formData, {
+    const result: responseType = await axiosClient.post(API_URL_CATEGORY, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -120,11 +137,11 @@ const AddBrandDiaglog = ({ varient, dataProps }: PropTypes) => {
   }
 
   return (
-    <React.Fragment>
+    <Fragment>
       <div onClick={handleClickOpen}>
         {varient === 'ADD' ? (
           <Button size='3' radius='full' className='w-full !cursor-pointer hover:bg-[#263E7B] bg-[#2f62ff3c] '>
-            Add new Brand
+            Add new category
             <PiPlusCircleBold />
           </Button>
         ) : (
@@ -133,19 +150,19 @@ const AddBrandDiaglog = ({ varient, dataProps }: PropTypes) => {
       </div>
       <Dialog fullScreen={fullScreen} open={open} onClose={handleClose} aria-labelledby='responsive-dialog-title'>
         <DialogTitle id='responsive-dialog-title' className='bg-[#171F29] text-primary' style={{ fontWeight: 'bold' }}>
-          {varient === 'ADD' ? 'Add Brand' : 'Edit Brand'}
+          {varient === 'ADD' ? 'Add Category' : 'Edit Category'}
         </DialogTitle>
         <DialogContent className='bg-[#171F29] '>
-          <p className='text-primary'>Brand Setting</p>
+          <p className='text-primary'>Category Setting</p>
           <form
             className=''
             onSubmit={handleSubmit((data) => {
-              varient === 'ADD' ? handleAddBrand(data) : handleEditBrand(data, dataProps)
+              varient === 'ADD' ? handleAddCategory(data) : handleEditCategory(data, dataProps)
             })}
           >
             <div className='gap-5 flex justify-between'>
               <div className='w-full'>
-                <TextH textProps='Brand Name' />
+                <TextH textProps='Category Name' />
                 <Input
                   name='name'
                   register={register}
@@ -154,9 +171,24 @@ const AddBrandDiaglog = ({ varient, dataProps }: PropTypes) => {
                   placeholder='Enter categry name...'
                 />
               </div>
+
+              <div className='w-full'>
+                <TextH textProps='Base Category' />
+                <Controller
+                  name='baseCategory'
+                  control={control}
+                  render={({ field }) => <ListBox field={field} data={baseCategories} name='' />}
+                />
+              </div>
             </div>
             <div className='mt-4 grid grid-cols-1 gap-4 md:grid-cols-2'>
-              <FileInput imageUrls={dataProps?.imageUrls} variant={varient} register={register} name='imageUrl' />
+              <FileInputMutiple
+                imageUrls={dataProps?.imageUrls}
+                variant={varient}
+                register={register}
+                name='imageUrl'
+              />
+              <FileInputSingle imageUrl={dataProps?.iconUrl} variant={varient} register={register} name='iconUrl' />
             </div>
             <div className='mt-[25px] flex justify-end'>
               <div className='flex gap-4'>
@@ -178,8 +210,8 @@ const AddBrandDiaglog = ({ varient, dataProps }: PropTypes) => {
           </form>
         </DialogContent>
       </Dialog>
-    </React.Fragment>
+    </Fragment>
   )
 }
 
-export default AddBrandDiaglog
+export default AddCategoryDialog

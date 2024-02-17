@@ -4,6 +4,7 @@ import { Flex, Text } from '@radix-ui/themes'
 import brandApi from '@/apis/brandApi'
 import { GridColDef } from '@mui/x-data-grid'
 import { DataTable } from '@/components/Table'
+import NullData from '@/components/NullData'
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', width: 220 },
@@ -56,7 +57,7 @@ const BrandPage = () => {
   lg:items-center lg:gap-4 '
         >
           <h1 className='text-primary flex-1 text-center lg:text-left text-4xl font-bold bg-[#171F29] rounded-lg !p-5 md:!p-[26px] lg:!py-5'>
-            Category Management
+            Brand Management
           </h1>
         </div>
         <div className='flex flex-col-reverse gap-4  md:flex-col lg:flex-row lg:justify-between p-5 pt-0'>
@@ -77,7 +78,11 @@ const BrandPage = () => {
             </div>
           </div>
           <div className='mt-5 rounded-xl'>
-            <DataTable slug='brands' columns={columns} rows={data} editBtn={editBrand} />
+            {data.length === 0 ? (
+              <NullData title="DON'T HAVE ANY BRAND YET" />
+            ) : (
+              <DataTable slug='brands' columns={columns} rows={data} editBtn={editBrand} />
+            )}
           </div>
         </div>
       </div>

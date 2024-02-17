@@ -5,6 +5,7 @@ import categoryApi from '@/apis/categoryApi'
 import productApi from '@/apis/productApi'
 import { CardItem, ListBox } from '@/components'
 import { AddProductDialog } from '@/components/Dialog'
+import NullData from '@/components/NullData'
 import PaginationComponent from '@/components/Pagination'
 import Search from '@/components/Search'
 import { CustomButton } from '@/components/common'
@@ -121,11 +122,6 @@ const Product = () => {
               render={({ field }) => <ListBox field={field} data={categories} name='Category' />}
             />
 
-            <Controller
-              name='brand'
-              control={control}
-              render={({ field }) => <ListBox field={field} data={brands} name='Brand' />}
-            />
             <CustomButton className='bg-[#263E7B] !cursor-pointer text-primary hover:bg-green5 focus:shadow-green7 inline-flex h-[35px] items-center justify-center rounded-[4px] px-[15px] font-medium leading-none focus:shadow-[0_0_0_2px] focus:outline-none'>
               Search
             </CustomButton>
@@ -134,7 +130,7 @@ const Product = () => {
       </div>
       <div>
         {products.length == 0 ? (
-          <p className='flex h-full justify-center items-center text-white font-bold'>DON'T HAVE ANY PRODUCT YET</p>
+          <NullData title="DON'T HAVE ANY PRODUCT YET" />
         ) : (
           <div>
             <div

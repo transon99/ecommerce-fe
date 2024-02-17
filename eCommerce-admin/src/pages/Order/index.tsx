@@ -1,6 +1,7 @@
 import orderApi from '@/apis/orderApi'
 import { CardOrder } from '@/components'
 import { EditOrderDialog } from '@/components/Dialog'
+import NullData from '@/components/NullData'
 import { DataTable } from '@/components/Table'
 import { GridColDef } from '@mui/x-data-grid'
 import { Flex, Text } from '@radix-ui/themes'
@@ -8,17 +9,11 @@ import { useEffect, useState } from 'react'
 import { FaCheckToSlot } from 'react-icons/fa6'
 
 const columns: GridColDef[] = [
-  { field: 'id', headerName: 'ID', width: 90 },
+  { field: 'id', headerName: 'ID', width: 220 },
   {
     field: 'userId',
     headerName: 'UserID',
-    width: 150
-  },
-  {
-    field: 'cartId',
-    type: 'string',
-    headerName: 'CartID',
-    width: 150
+    width: 220
   },
   {
     field: 'paymentMethodId',
@@ -27,21 +22,15 @@ const columns: GridColDef[] = [
     width: 150
   },
   {
-    field: 'isAccept',
-    type: 'string',
-    headerName: 'IsAccept',
-    width: 90
-  },
-  {
     field: 'status',
     type: 'string',
     headerName: 'Order Status',
     width: 200
   },
   {
-    field: 'totalPrice',
-    headerName: 'Total Price',
-    width: 100,
+    field: 'amount',
+    headerName: 'Amount(USD)',
+    width: 130,
     type: 'string'
   },
   {
@@ -102,7 +91,11 @@ const OrderPage = () => {
           ))}
         </Flex>
         <div className='mt-5 rounded-xl'>
-          <DataTable slug='orders' columns={columns} rows={data} editBtn={editOrder} />
+          {data.length === 0 ? (
+            <NullData title="DON'T HAVE ANY ORDER YET" />
+          ) : (
+            <DataTable slug='orders' columns={columns} rows={data} editBtn={editOrder} />
+          )}
         </div>
       </div>
     </div>
