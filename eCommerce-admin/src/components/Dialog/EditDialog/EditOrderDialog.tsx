@@ -11,7 +11,6 @@ import { toast } from 'react-toastify'
 import Swal from 'sweetalert2'
 
 import axiosClient from '@/axios/axiosClient'
-import ListBox from '@/components/Input/ListBox'
 import { API_URL_CATEGORY, API_URL_PRODUCT } from '@/constant/apiConstant'
 import { Button } from '@radix-ui/themes'
 import { Controller, useForm } from 'react-hook-form'
@@ -19,6 +18,7 @@ import FileInput from '../../Input/FileInputSingle'
 import { Input } from '../../Input/Input'
 import CustomButton from '../../common/CustomButton'
 import '../index.css'
+import CustomSelect from '@/components/Input/CustomSelect '
 
 interface PropTypes {
   varient: string
@@ -92,7 +92,7 @@ const EditOrderDialog = ({ varient, dataProps, categoriesData, brandsData }: Pro
       name: data.productName,
       description: data.description,
       sku: data.sku,
-      priceUnit: data.price,
+      price: data.price,
       brandId: data.brand,
       quantity: data.quantity,
       categoryId: data.category,
@@ -190,9 +190,7 @@ const EditOrderDialog = ({ varient, dataProps, categoriesData, brandsData }: Pro
                   <Controller
                     name='brand'
                     control={control}
-                    render={({ field }) => (
-                      <ListBox field={field} data={brandsData} name='Brand' defaultValue={dataProps?.brand?.name} />
-                    )}
+                    render={({ field }) => <CustomSelect field={field} options={brandsData} />}
                   />
                 </div>
                 <div className='w-full'>
@@ -200,14 +198,7 @@ const EditOrderDialog = ({ varient, dataProps, categoriesData, brandsData }: Pro
                   <Controller
                     name='category'
                     control={control}
-                    render={({ field }) => (
-                      <ListBox
-                        field={field}
-                        data={categoriesData}
-                        name='Category'
-                        defaultValue={dataProps?.category?.name}
-                      />
-                    )}
+                    render={({ field }) => <CustomSelect field={field} options={categoriesData} />}
                   />
                 </div>
               </div>

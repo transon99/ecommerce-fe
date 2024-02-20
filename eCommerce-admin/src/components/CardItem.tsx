@@ -1,21 +1,23 @@
 import { Button, Card, Flex, Heading, Text } from '@radix-ui/themes'
 import { Link } from 'react-router-dom'
 import { AddProductDialog } from './Dialog'
+import EditProductDialog from './Dialog/EditDialog/EditProductDialog'
 
-interface Props extends Product {
-  categoriesData: Category[]
-  brandsData: Brand[]
+interface CardItem {
+  product: Product
+  brandOptions: any[] | undefined
+  categoryOptions: any[] | undefined
 }
 
-const CardItem = (props: Props) => {
-  console.log('props =====>', props)
-  const salePrice = (1 - (props?.discount ?? 0) / 100) * (props?.priceUnit ?? 0)
+const CardItem = ({ product, brandOptions, categoryOptions }: CardItem) => {
+  console.log('product =====>', product)
+  const salePrice = (1 - (product?.discount ?? 0) / 100) * (product?.price ?? 0)
   return (
-    <div className='bg-secondary' key={props.id}>
+    <div className='bg-secondary' key={product.id}>
       <Card size='2' className='!bg-secondary text-primary'>
         <Flex direction={'column'} gap={'3'}>
           <img
-            src={props?.thumbnailUrls[0]?.thumbnailUrl}
+            src={product?.thumbnailUrls[0]?.thumbnailUrl}
             alt='Bold typography'
             style={{
               display: 'block',
@@ -29,21 +31,21 @@ const CardItem = (props: Props) => {
           <Flex direction={'column'} gap={'2'}>
             <Link to='/'>
               <Heading as='h3' className='text-base'>
-                {props.name}
+                {product.name}
               </Heading>
             </Link>
 
             <Text as='p' size='3' weight={'medium'} className='text-[#00BA9D] leading-[1.4]'>
-              {`Available : ${props.quantity}`}
+              {`Available : ${product.quantity}`}
             </Text>
             {/* <Text as='p' size='3' weight={'medium'} className='text-[#4F89FC] leading-[1.4]'>
               Already sold : 158
             </Text> */}
             <Text as='p' size='3' weight={'medium'} className='text-[#4F89FC] leading-[1.4]'>
-              {`Discount : ${props.discount}%`}
+              {`Discount : ${product.discount}%`}
             </Text>
             <Text as='p' size='3' weight={'medium'} className='text-white leading-[1.4]'>
-              {`Regular price : ${props.priceUnit}`}
+              {`Regular price : ${product.price}`}
             </Text>
             <Text as='p' size='3' weight={'medium'} className='text-white leading-[1.4]'>
               {`Sale price : ${salePrice}`}
@@ -51,12 +53,7 @@ const CardItem = (props: Props) => {
           </Flex>
         </Flex>
         <div className='grid grid-cols-2 gap-1.5 mt-4'>
-          <AddProductDialog
-            varient='EDIT'
-            dataProps={props}
-            categoriesData={props.categoriesData}
-            brandsData={props.brandsData}
-          />
+          <EditProductDialog productId={product.id} categoryOptions={categoryOptions} brandOptions={brandOptions} />
 
           <Button
             variant='outline'

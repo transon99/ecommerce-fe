@@ -10,33 +10,44 @@ import Swal from 'sweetalert2'
 import axiosClient from '@/axios/axiosClient'
 import { API_URL_BANNER, API_URL_CATEGORY } from '@/constant/apiConstant'
 import { Button } from '@radix-ui/themes'
-import { Fragment, useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { Fragment, useCallback, useEffect, useState } from 'react'
+import { FieldValues, useForm } from 'react-hook-form'
 import { MdEdit } from 'react-icons/md'
 import ActionBtn from '../../ActionBtn'
 import { Input } from '../../Input/Input'
 import CustomButton from '../../common/CustomButton'
 import '../index.css'
-import FileInputMutiple from '../../Input/FileInputMutiple'
+import { ImageType } from '../AddDialog/AddProductDialog'
+import bannerApi from '@/apis/bannerApi'
+import SelectImageArea from '@/components/Input/SelectImageArea'
+import { rules } from '@/utils/rules'
 
 interface PropTypes {
-  varient: string
-  dataProps?: Category
+  bannerId?: string
 }
 
-interface InputProps {
-  textProps: string
-}
-
-const TextH = ({ textProps }: InputProps) => {
-  return <p className='text-primary my-2'>{textProps}</p>
-}
-
-const EditBannerDialog = ({ varient, dataProps }: PropTypes) => {
+const EditBannerDialog = ({ bannerId }: PropTypes) => {
   const [open, setOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [banner, setBanner] = useState<Banner>()
+  const [images, setImages] = useState<ImageType[] | null>()
+  const [isProductCreated, setIsProductCreated] = useState(false)
   const theme = useTheme()
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'))
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await bannerApi.getById(bannerId)
+        console.log('data', response)
+        setBanner(response.data)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
+    }
+    fetchData()
+  }, [])
+  console.log('banner dialog', banner)
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -46,54 +57,70 @@ const EditBannerDialog = ({ varient, dataProps }: PropTypes) => {
     setOpen(false)
   }
 
-  const { register, handleSubmit } = useForm()
-
-  const handleEditBanner = async (data: any, dataProps: Category | undefined) => {
-    console.log('dataPro', dataProps)
-    console.log('data:', data)
-    const reqConfig: CategoryRequest = {
-      name: data.name
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    formState: { errors }
+  } = useForm<FieldValues>({
+    defaultValues: {
+      bannerName: '',
+      images: []
     }
-    const formData = new FormData()
-    formData.append('data', JSON.stringify(reqConfig))
-    formData.append('image', data.imageUrl[0])
-    console.log('Form data', [...formData])
-    setIsLoading(true)
-    const result: responseType = await axiosClient.put(`${API_URL_CATEGORY}/${dataProps?.id}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+  })
+
+  useEffect(() => {
+    setCustomValue('images', images)
+  }, [images])
+
+  useEffect(() => {
+    setCustomValue('bannerName', banner?.name)
+  }, [banner])
+
+  useEffect(() => {
+    if (isProductCreated) {
+      reset()
+      setImages(null)
+      setIsProductCreated(false)
+    }
+  }, [isProductCreated])
+
+  const setCustomValue = (id: string, value: any) => {
+    setValue(id, value, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true
     })
-    setIsLoading(false)
-
-    if (result.status === 'OK') {
-      Swal.fire({
-        title: 'Congratulations !',
-        text: result.message,
-        icon: 'success',
-        showCloseButton: true,
-        confirmButtonText: 'Close'
-      }).then(({ isConfirmed }) => {
-        if (isConfirmed) {
-          handleClose()
-          window.location.reload()
-        }
-      })
-    } else {
-      toast.error(result.message)
-    }
   }
 
-  const handleAddBanner = async (data: any) => {
-    const reqConfig: CategoryRequest = {
-      name: data.name
-    }
+  const addImageToState = useCallback((value: ImageType) => {
+    setImages((prev) => {
+      if (!prev) {
+        return [value]
+      }
+      return [...prev, value]
+    })
+  }, [])
+
+  const removeImageFromState = useCallback((value: ImageType) => {
+    setImages((prev) => {
+      if (prev) {
+        const fileredImages = prev.filter((item) => item.imageOrder !== value.imageOrder)
+        return fileredImages
+      }
+      return prev
+    })
+  }, [])
+  const handleEditBanner = async (data: any) => {
     const formData = new FormData()
-    formData.append('data', JSON.stringify(reqConfig))
-    formData.append('image', data.imageUrl[0])
+    formData.append('name', data.bannerName)
+    if (data?.images) {
+      formData.append('file', data?.images[0]?.image)
+    }
+    console.log('Form data', [...formData])
     setIsLoading(true)
-    console.log('first', [...formData])
-    const result: responseType = await axiosClient.post(API_URL_BANNER, formData, {
+    const result: responseType = await axiosClient.put(`${API_URL_BANNER}/${bannerId}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -121,45 +148,42 @@ const EditBannerDialog = ({ varient, dataProps }: PropTypes) => {
   return (
     <Fragment>
       <div onClick={handleClickOpen}>
-        {varient === 'ADD' ? (
-          <Button size='3' radius='full' className='w-full !cursor-pointer hover:bg-[#263E7B] bg-[#2f62ff3c] '>
-            Add new banner
-            <PiPlusCircleBold />
-          </Button>
-        ) : (
-          <ActionBtn icon={MdEdit} />
-        )}
+        <ActionBtn icon={MdEdit} />
       </div>
       <Dialog fullScreen={fullScreen} open={open} onClose={handleClose} aria-labelledby='responsive-dialog-title'>
         <DialogTitle id='responsive-dialog-title' className='bg-[#171F29] text-primary' style={{ fontWeight: 'bold' }}>
-          {varient === 'ADD' ? 'Add Banner' : 'Edit Banner'}
+          Edit Banner
         </DialogTitle>
-        <DialogContent className='bg-[#171F29] '>
-          <p className='text-primary'>Banner Setting</p>
+        <DialogContent className='bg-[#171F29] min-w-[400px]'>
           <form
             className=''
             onSubmit={handleSubmit((data) => {
-              varient === 'ADD' ? handleAddBanner(data) : handleEditBanner(data, dataProps)
+              handleEditBanner(data)
             })}
           >
             <div className='gap-5 flex justify-between'>
               <div className='w-full'>
-                <TextH textProps='Banner Name' />
                 <Input
-                  name='name'
+                  id='bannerName'
                   register={register}
                   type='text'
-                  defaulValue={dataProps?.name}
-                  placeholder='Enter banner name...'
+                  errorMessage={errors.bannerName?.message?.toString()}
+                  rules={rules.bannerName}
+                  lable='Banner Name'
+                  disabled={isLoading}
+                  placeholder='Enter categry name...'
                 />
               </div>
             </div>
-            <div className='mt-4 grid grid-cols-1 gap-4 md:grid-cols-2'>
-              <FileInputMutiple
-                imageUrls={dataProps?.imageUrls}
-                variant={varient}
-                register={register}
-                name='imageUrl'
+            <label htmlFor='Select images' className='block mb-2 font-medium text-gray-900 dark:text-white'>
+              Select images
+            </label>
+            <div className='mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 text-white'>
+              <SelectImageArea
+                item={{ imageOrder: 'Banner ', image: null }}
+                addImageToState={addImageToState}
+                removeImageFromState={removeImageFromState}
+                isProductCreated={isProductCreated}
               />
             </div>
             <div className='mt-[25px] flex justify-end'>

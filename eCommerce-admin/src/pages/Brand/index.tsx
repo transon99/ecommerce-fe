@@ -5,6 +5,7 @@ import brandApi from '@/apis/brandApi'
 import { GridColDef } from '@mui/x-data-grid'
 import { DataTable } from '@/components/Table'
 import NullData from '@/components/NullData'
+import EditBrandDialog from '@/components/Dialog/EditDialog/EditBrandDialog'
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', width: 220 },
@@ -26,7 +27,7 @@ const columns: GridColDef[] = [
 ]
 
 const BrandPage = () => {
-  const editBrand = (data: any) => <AddBrandDialog varient='EDIT' dataProps={data} />
+  const editBrand = (id: string) => <EditBrandDialog brandId={id} />
 
   const [data, setData] = useState<Brand[]>([])
   console.log(data)
@@ -34,15 +35,9 @@ const BrandPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const param = {
-          searchText: '',
-          offset: 0,
-          pageSize: 5,
-          sortStr: ''
-        }
-        const response = await brandApi.getByConditionAndPagination(param)
-        console.log(response.data.data.content)
-        setData(response.data.data.content)
+        const response = await brandApi.getAll()
+        console.log(response.data)
+        setData(response.data)
       } catch (error) {
         console.error('Error fetching data:', error)
       }
@@ -62,7 +57,7 @@ const BrandPage = () => {
         </div>
         <div className='flex flex-col-reverse gap-4  md:flex-col lg:flex-row lg:justify-between p-5 pt-0'>
           <Flex direction={'column'} gap={'3'}>
-            <AddBrandDialog varient='ADD' />
+            <AddBrandDialog />
           </Flex>
         </div>
         <div className='flex flex-col flex-1 p-5 text-primary'>
@@ -81,7 +76,7 @@ const BrandPage = () => {
             {data.length === 0 ? (
               <NullData title="DON'T HAVE ANY BRAND YET" />
             ) : (
-              <DataTable slug='brands' columns={columns} rows={data} editBtn={editBrand} />
+              <DataTable slug='brand' columns={columns} rows={data} editBtn={editBrand} />
             )}
           </div>
         </div>

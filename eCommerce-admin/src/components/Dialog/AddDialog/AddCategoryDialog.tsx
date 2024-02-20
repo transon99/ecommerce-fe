@@ -1,58 +1,36 @@
-import { PiPlusCircleBold } from 'react-icons/pi'
 import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { PiPlusCircleBold } from 'react-icons/pi'
 import { toast } from 'react-toastify'
 import Swal from 'sweetalert2'
 
+import axiosClient from '@/axios/axiosClient'
+import CustomSelect from '@/components/Input/CustomSelect '
+import SelectImageArea from '@/components/Input/SelectImageArea'
 import { API_URL_CATEGORY } from '@/constant/apiConstant'
+import { rules } from '@/utils/rules'
 import { Button } from '@radix-ui/themes'
-import { Controller, useForm } from 'react-hook-form'
-import { MdEdit } from 'react-icons/md'
-import ActionBtn from '../../ActionBtn'
+import { Fragment, useCallback, useEffect, useState } from 'react'
+import { Controller, FieldValues, useForm } from 'react-hook-form'
 import { Input } from '../../Input/Input'
 import CustomButton from '../../common/CustomButton'
 import '../index.css'
-import axiosClient from '@/axios/axiosClient'
-import { ListBox } from '../..'
-import { Fragment, useEffect, useState } from 'react'
-import categoryApi from '@/apis/categoryApi'
-import FileInputMutiple from '../../Input/FileInputMutiple'
-import FileInputSingle from '../../Input/FileInputSingle'
+import { ImageType } from './AddProductDialog'
 
-interface PropTypes {
-  varient: string
-  dataProps?: Category
+interface AddProductDialogProps {
+  baseCategoryOptions: any[] | undefined
 }
 
-interface InputProps {
-  textProps: string
-}
-
-const TextH = ({ textProps }: InputProps) => {
-  return <p className='text-primary my-2'>{textProps}</p>
-}
-
-const AddCategoryDialog = ({ varient, dataProps }: PropTypes) => {
+const AddCategoryDialog = ({ baseCategoryOptions }: AddProductDialogProps) => {
   const [open, setOpen] = useState(false)
-  const [baseCategories, setBaseCategories] = useState<any[]>()
   const [isLoading, setIsLoading] = useState(false)
+  const [images, setImages] = useState<ImageType[] | null>()
+  const [isProductCreated, setIsProductCreated] = useState(false)
   const theme = useTheme()
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'))
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await categoryApi.getBaseCategory()
-        setBaseCategories(response.data)
-      } catch (error) {
-        console.error('Error fetching data:', error)
-      }
-    }
-    fetchData()
-  }, [])
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -62,54 +40,75 @@ const AddCategoryDialog = ({ varient, dataProps }: PropTypes) => {
     setOpen(false)
   }
 
-  const { register, handleSubmit, control } = useForm()
-
-  const handleEditCategory = async (data: any, dataProps: Category | undefined) => {
-    console.log('data:', data)
-    const reqConfig: CategoryRequest = {
-      name: data.name,
-      parentCatId: data.baseCategory ? data.baseCategory : ''
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    control,
+    formState: { errors }
+  } = useForm<FieldValues>({
+    defaultValues: {
+      name: '',
+      baseCategories: '',
+      images: []
     }
-    const formData = new FormData()
-    formData.append('data', JSON.stringify(reqConfig))
-    formData.append('image', data.imageUrl[0])
-    formData.append('icon', data.iconUrl[0])
-    console.log([...formData])
-    setIsLoading(true)
-    const result: responseType = await axiosClient.put(`${API_URL_CATEGORY}/${dataProps?.id}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+  })
+
+  useEffect(() => {
+    setCustomValue('images', images)
+  }, [images])
+
+  console.log('baseCategorysOptions', baseCategoryOptions)
+
+  useEffect(() => {
+    if (isProductCreated) {
+      reset()
+      setImages(null)
+      setIsProductCreated(false)
+    }
+  }, [isProductCreated])
+
+  const setCustomValue = (id: string, value: any) => {
+    setValue(id, value, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true
     })
-    setIsLoading(false)
-
-    if (result.status === 'OK') {
-      Swal.fire({
-        title: 'Congratulations !',
-        text: result.message,
-        icon: 'success',
-        showCloseButton: true,
-        confirmButtonText: 'Close'
-      }).then(({ isConfirmed }) => {
-        if (isConfirmed) {
-          handleClose()
-          window.location.reload()
-        }
-      })
-    } else {
-      toast.error(result.message)
-    }
   }
 
+  const addImageToState = useCallback((value: ImageType) => {
+    setImages((prev) => {
+      if (!prev) {
+        return [value]
+      }
+      return [...prev, value]
+    })
+  }, [])
+
+  const removeImageFromState = useCallback((value: ImageType) => {
+    setImages((prev) => {
+      if (prev) {
+        const fileredImages = prev.filter((item) => item.imageOrder !== value.imageOrder)
+        return fileredImages
+      }
+      return prev
+    })
+  }, [])
+
   const handleAddCategory = async (data: any) => {
-    const reqConfig: CategoryRequest = {
-      name: data.name,
-      parentCatId: data.baseCategory ? data.baseCategory : ''
-    }
+    console.log('data: ', data)
     const formData = new FormData()
-    formData.append('data', JSON.stringify(reqConfig))
-    formData.append('image', data.imageUrl[0])
-    formData.append('icon', data.iconUrl[0])
+    formData.append('name', data.categoryName)
+    formData.append('parentCatId', data.baseCategories ? data?.baseCategories.value : '')
+    if (data?.images && data?.images[0]) {
+      formData.append('imageFile', data?.images[0]?.image)
+    }
+    if (data?.images && data?.images[1]) {
+      formData.append('iconFile', data?.images[1]?.image)
+    }
+
+    console.log('data: ', [...formData])
     setIsLoading(true)
     const result: responseType = await axiosClient.post(API_URL_CATEGORY, formData, {
       headers: {
@@ -139,56 +138,64 @@ const AddCategoryDialog = ({ varient, dataProps }: PropTypes) => {
   return (
     <Fragment>
       <div onClick={handleClickOpen}>
-        {varient === 'ADD' ? (
-          <Button size='3' radius='full' className='w-full !cursor-pointer hover:bg-[#263E7B] bg-[#2f62ff3c] '>
-            Add new category
-            <PiPlusCircleBold />
-          </Button>
-        ) : (
-          <ActionBtn icon={MdEdit} />
-        )}
+        <Button size='3' radius='full' className='w-full !cursor-pointer hover:bg-[#263E7B] bg-[#2f62ff3c] '>
+          Add new category
+          <PiPlusCircleBold />
+        </Button>
       </div>
       <Dialog fullScreen={fullScreen} open={open} onClose={handleClose} aria-labelledby='responsive-dialog-title'>
         <DialogTitle id='responsive-dialog-title' className='bg-[#171F29] text-primary' style={{ fontWeight: 'bold' }}>
-          {varient === 'ADD' ? 'Add Category' : 'Edit Category'}
+          Add Category
         </DialogTitle>
         <DialogContent className='bg-[#171F29] '>
-          <p className='text-primary'>Category Setting</p>
           <form
             className=''
             onSubmit={handleSubmit((data) => {
-              varient === 'ADD' ? handleAddCategory(data) : handleEditCategory(data, dataProps)
+              handleAddCategory(data)
             })}
           >
             <div className='gap-5 flex justify-between'>
               <div className='w-full'>
-                <TextH textProps='Category Name' />
                 <Input
-                  name='name'
+                  id='categoryName'
                   register={register}
                   type='text'
-                  defaulValue={dataProps?.name}
                   placeholder='Enter categry name...'
+                  lable='Category Name'
+                  errorMessage={errors.categoryName?.message?.toString()}
+                  rules={rules.categoryName}
+                  disabled={isLoading}
                 />
               </div>
 
               <div className='w-full'>
-                <TextH textProps='Base Category' />
                 <Controller
-                  name='baseCategory'
+                  name='baseCategories'
                   control={control}
-                  render={({ field }) => <ListBox field={field} data={baseCategories} name='' />}
+                  render={({ field }) => (
+                    <CustomSelect field={field} options={baseCategoryOptions} lable='Base Category' />
+                  )}
                 />
               </div>
             </div>
-            <div className='mt-4 grid grid-cols-1 gap-4 md:grid-cols-2'>
-              <FileInputMutiple
-                imageUrls={dataProps?.imageUrls}
-                variant={varient}
-                register={register}
-                name='imageUrl'
-              />
-              <FileInputSingle imageUrl={dataProps?.iconUrl} variant={varient} register={register} name='iconUrl' />
+            <div className='mt-4 '>
+              <label htmlFor='Select images' className='block mb-2 font-medium text-gray-900 dark:text-white'>
+                Select images
+              </label>
+              <div className='grid grid-cols-2 gap-3 text-white text-sm'>
+                <SelectImageArea
+                  item={{ imageOrder: 'Category ', image: null }}
+                  addImageToState={addImageToState}
+                  removeImageFromState={removeImageFromState}
+                  isProductCreated={isProductCreated}
+                />
+                <SelectImageArea
+                  item={{ imageOrder: 'Icon', image: null }}
+                  addImageToState={addImageToState}
+                  removeImageFromState={removeImageFromState}
+                  isProductCreated={isProductCreated}
+                />
+              </div>
             </div>
             <div className='mt-[25px] flex justify-end'>
               <div className='flex gap-4'>

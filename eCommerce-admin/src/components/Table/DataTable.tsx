@@ -2,7 +2,7 @@ import { DataGrid, GridColDef, GridToolbar } from '@mui/x-data-grid'
 import './DataTable.scss'
 import ActionBtn from '../ActionBtn'
 import { MdDelete } from 'react-icons/md'
-import { BANNER, BRAND, CATEGORY } from '@/constant/commonConstant'
+import { BANNER, BRAND, CATEGORY, SUCCESS_STATUS } from '@/constant/commonConstant'
 import brandApi from '@/apis/brandApi'
 import bannerApi from '@/apis/bannerApi'
 import categoryApi from '@/apis/categoryApi'
@@ -18,23 +18,30 @@ type Props = {
 const DataTable = (props: Props) => {
   const { editBtn } = props
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
+    let response
     switch (props.slug) {
       case BRAND:
-        brandApi.delete(id)
+        response = await brandApi.delete(id)
+
         break
 
       case BANNER:
-        bannerApi.delete(id)
+        response = await bannerApi.delete(id)
+
         break
 
       case CATEGORY:
-        categoryApi.delete(id)
+        response = await categoryApi.delete(id)
+
         break
       default:
         console.log('invalid value')
     }
-    window.location.reload()
+    console.log('first', response)
+    if (response.status === SUCCESS_STATUS) {
+      window.location.reload()
+    }
   }
 
   const actionColumn: GridColDef = {
@@ -44,13 +51,14 @@ const DataTable = (props: Props) => {
     renderCell: (param) => {
       return (
         <div className='flex justify-between gap-4 w-full'>
-          {editBtn(param.row)}
+          {editBtn(param.row.id)}
           <ActionBtn icon={MdDelete} onClick={() => handleDelete(param.row.id)} />
         </div>
       )
     }
   }
 
+  console.log('props', [...props.rows])
   return (
     <div>
       <DataGrid

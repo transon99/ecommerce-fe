@@ -7,7 +7,17 @@ type CategoryRequest = {
 interface Category {
   id?: string | undefined
   name?: string
-  baseCategory?: string | undefined
+  baseCategory?: Category | undefined
   imageUrls?: any[]
   iconUrl?: any
+}
+
+interface CategoryResponse {
+  id?: string | undefined
+  name?: string
+  baseCategory?: Category | undefined
+  imageUrls?: any[]
+  iconUrl?: any
+  children?: CategoryResponse[]
+  parent?: CategoryResponse
 }

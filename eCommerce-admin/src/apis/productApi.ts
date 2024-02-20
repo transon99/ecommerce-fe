@@ -21,6 +21,9 @@ const productApi = {
       params
     })
   },
+  getById: (id: string | undefined) => {
+    return axiosClient.get(`${url}/${id}`)
+  },
   delete: (id: string) => {
     return axiosClient.delete(`${url}/${id}`)
   }

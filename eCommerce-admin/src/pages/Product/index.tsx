@@ -3,8 +3,9 @@
 import brandApi from '@/apis/brandApi'
 import categoryApi from '@/apis/categoryApi'
 import productApi from '@/apis/productApi'
-import { CardItem, ListBox } from '@/components'
+import { CardItem } from '@/components'
 import { AddProductDialog } from '@/components/Dialog'
+import CustomSelect from '@/components/Input/CustomSelect '
 import NullData from '@/components/NullData'
 import PaginationComponent from '@/components/Pagination'
 import Search from '@/components/Search'
@@ -20,9 +21,43 @@ const Product = () => {
   const [brandId, setBrandId] = useState<string>('')
 
   const [categories, setCategories] = useState<Category[]>([])
-  const [brands, setBrands] = useState<Brand[]>([])
+  const [categoryOptions, setCategoryOptions] = useState<Category[]>([])
+  const [brandOptions, setBrandOptions] = useState<Category[]>([])
+  const [brands, setBrands] = useState<any[]>([])
   const [products, setProducts] = useState<Product[]>([])
   console.log('====> producs', products)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await categoryApi.getAll()
+        const categoryOptions = response.data?.map((category: Category) => ({
+          value: category.id,
+          label: category.name
+        }))
+        setCategoryOptions(categoryOptions)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
+    }
+    fetchData()
+  }, [])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await brandApi.getAll()
+        const brandOptions = response.data?.map((brand: Brand) => ({
+          value: brand.id,
+          label: brand.name
+        }))
+        setBrandOptions(brandOptions)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
+    }
+    fetchData()
+  }, [])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,7 +113,7 @@ const Product = () => {
       </div>
       <div className='flex flex-col-reverse gap-4  md:flex-col lg:flex-row lg:justify-between p-5 pt-0'>
         <Flex direction={'column'} gap={'3'}>
-          <AddProductDialog varient='ADD' categoriesData={categories} brandsData={brands} />
+          <AddProductDialog categoryOptions={categoryOptions} brandOptions={brandOptions} />
         </Flex>
         <div className='relative lg:w-[326px]'>
           <Search placeholder='Search Product ...' />
@@ -119,7 +154,7 @@ const Product = () => {
             <Controller
               name='category'
               control={control}
-              render={({ field }) => <ListBox field={field} data={categories} name='Category' />}
+              render={({ field }) => <CustomSelect field={field} options={categories} />}
             />
 
             <CustomButton className='bg-[#263E7B] !cursor-pointer text-primary hover:bg-green5 focus:shadow-green7 inline-flex h-[35px] items-center justify-center rounded-[4px] px-[15px] font-medium leading-none focus:shadow-[0_0_0_2px] focus:outline-none'>
@@ -139,18 +174,10 @@ const Product = () => {
             >
               {products.map((product) => (
                 <CardItem
-                  categoriesData={categories}
-                  brandsData={brands}
-                  name={product.name}
-                  priceUnit={product.priceUnit}
-                  brand={product.brand}
-                  category={product.category}
-                  description={product.description}
-                  discount={product.discount}
-                  thumbnailUrls={product.thumbnailUrls}
-                  quantity={product.quantity}
-                  sku={product.sku}
+                  product={product}
                   key={product.id}
+                  categoryOptions={categoryOptions}
+                  brandOptions={brandOptions}
                 />
               ))}
             </div>

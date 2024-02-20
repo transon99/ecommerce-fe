@@ -17,6 +17,9 @@ const brandApi = {
   getAll: () => {
     return axiosClient.get(`${url}/all`)
   },
+  getById: (id: string | undefined) => {
+    return axiosClient.get(`${url}/${id}`)
+  },
   delete: (id: string) => {
     return axiosClient.delete(`${url}/${id}`)
   }

@@ -1,4 +1,3 @@
-import { PiPlusCircleBold } from 'react-icons/pi'
 import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
@@ -7,25 +6,47 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { toast } from 'react-toastify'
 import Swal from 'sweetalert2'
 
+import categoryApi from '@/apis/categoryApi'
 import axiosClient from '@/axios/axiosClient'
+import CustomSelect from '@/components/Input/CustomSelect '
 import SelectImageArea from '@/components/Input/SelectImageArea'
-import { API_URL_BRAND } from '@/constant/apiConstant'
+import { API_URL_CATEGORY } from '@/constant/apiConstant'
 import { rules } from '@/utils/rules'
 import { Button } from '@radix-ui/themes'
 import { Fragment, useCallback, useEffect, useState } from 'react'
-import { FieldValues, useForm } from 'react-hook-form'
+import { Controller, FieldValues, useForm } from 'react-hook-form'
+import { MdEdit } from 'react-icons/md'
+import ActionBtn from '../../ActionBtn'
 import { Input } from '../../Input/Input'
 import CustomButton from '../../common/CustomButton'
+import { ImageType } from '../AddDialog/AddProductDialog'
 import '../index.css'
-import { ImageType } from './AddProductDialog'
 
-const AddBrandDiaglog = () => {
+interface PropTypes {
+  categoryId?: string
+  baseCategoryOptions: any[] | undefined
+}
+
+const EditCategoryDialog = ({ categoryId, baseCategoryOptions }: PropTypes) => {
   const [open, setOpen] = useState(false)
+  const [category, setCategory] = useState<CategoryResponse>()
   const [isLoading, setIsLoading] = useState(false)
   const [images, setImages] = useState<ImageType[] | null>()
   const [isProductCreated, setIsProductCreated] = useState(false)
   const theme = useTheme()
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'))
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await categoryApi.getById(categoryId)
+        setCategory(response.data)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
+    }
+    fetchData()
+  }, [])
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -40,17 +61,32 @@ const AddBrandDiaglog = () => {
     handleSubmit,
     setValue,
     reset,
+    control,
     formState: { errors }
   } = useForm<FieldValues>({
     defaultValues: {
-      brandName: '',
+      name: '',
+      baseCategories: '',
       images: []
     }
   })
+  const setCustomValue = (id: string, value: any) => {
+    setValue(id, value, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true
+    })
+  }
 
   useEffect(() => {
     setCustomValue('images', images)
   }, [images])
+
+  useEffect(() => {
+    setCustomValue('categoryName', category?.name)
+    const valueBaseCategorysOption = { value: category?.parent?.id, label: category?.parent?.name }
+    setCustomValue('baseCategories', valueBaseCategorysOption)
+  }, [category])
 
   useEffect(() => {
     if (isProductCreated) {
@@ -59,14 +95,6 @@ const AddBrandDiaglog = () => {
       setIsProductCreated(false)
     }
   }, [isProductCreated])
-
-  const setCustomValue = (id: string, value: any) => {
-    setValue(id, value, {
-      shouldValidate: true,
-      shouldDirty: true,
-      shouldTouch: true
-    })
-  }
 
   const addImageToState = useCallback((value: ImageType) => {
     setImages((prev) => {
@@ -87,19 +115,23 @@ const AddBrandDiaglog = () => {
     })
   }, [])
 
-  const handleAddBrand = async (data: any) => {
+  const handleEditCategory = async (data: any) => {
     console.log('data: ', data)
-    const formData = new FormData()
-    formData.append('name', data.brandName)
 
-    if (data?.images) {
-      formData.append('files', data?.images[0]?.image)
+    const formData = new FormData()
+    formData.append('name', data.categoryName)
+    formData.append('parentCatId', data?.baseCategories.value ? data?.baseCategories.value : '')
+
+    if (data?.images && data?.images[0]) {
+      formData.append('imageFile', data?.images[0]?.image)
+    }
+    if (data?.images && data?.images[1]) {
+      formData.append('iconFile', data?.images[1]?.image)
     }
 
-    setIsLoading(true)
     console.log('data1: ', [...formData])
-
-    const result: responseType = await axiosClient.post(API_URL_BRAND, formData, {
+    setIsLoading(true)
+    const result: responseType = await axiosClient.put(`${API_URL_CATEGORY}/${categoryId}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -127,50 +159,62 @@ const AddBrandDiaglog = () => {
   return (
     <Fragment>
       <div onClick={handleClickOpen}>
-        <Button size='3' radius='full' className='w-full !cursor-pointer hover:bg-[#263E7B] bg-[#2f62ff3c] '>
-          Add new Brand
-          <PiPlusCircleBold />
-        </Button>
+        <ActionBtn icon={MdEdit} />
       </div>
       <Dialog fullScreen={fullScreen} open={open} onClose={handleClose} aria-labelledby='responsive-dialog-title'>
         <DialogTitle id='responsive-dialog-title' className='bg-[#171F29] text-primary' style={{ fontWeight: 'bold' }}>
-          Add Brand
+          Edit Category
         </DialogTitle>
-        <DialogContent className='bg-[#171F29] min-w-[400px]'>
+        <DialogContent className='bg-[#171F29] '>
           <form
             className=''
             onSubmit={handleSubmit((data) => {
-              handleAddBrand(data)
+              handleEditCategory(data)
             })}
           >
             <div className='gap-5 flex justify-between'>
               <div className='w-full'>
                 <Input
-                  id='brandName'
+                  id='categoryName'
                   register={register}
                   type='text'
-                  placeholder='Enter brand name...'
-                  lable='Brand Name'
-                  errorMessage={errors.brandName?.message?.toString()}
-                  rules={rules.brandName}
+                  placeholder='Enter categry name...'
+                  lable='Category Name'
+                  errorMessage={errors.categoryName?.message?.toString()}
+                  rules={rules.categoryName}
                   disabled={isLoading}
                 />
               </div>
+
+              <div className='w-full'>
+                <Controller
+                  name='baseCategories'
+                  control={control}
+                  render={({ field }) => (
+                    <CustomSelect field={field} options={baseCategoryOptions} lable='Base Category' />
+                  )}
+                />
+              </div>
             </div>
-            <div>
+            <div className='mt-4 '>
               <label htmlFor='Select images' className='block mb-2 font-medium text-gray-900 dark:text-white'>
                 Select images
               </label>
-              <div className='mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 text-white'>
+              <div className='grid grid-cols-2 gap-3 text-white text-sm'>
                 <SelectImageArea
-                  item={{ imageOrder: 'Brand ', image: null }}
+                  item={{ imageOrder: 'Category ', image: null }}
+                  addImageToState={addImageToState}
+                  removeImageFromState={removeImageFromState}
+                  isProductCreated={isProductCreated}
+                />
+                <SelectImageArea
+                  item={{ imageOrder: 'Icon', image: null }}
                   addImageToState={addImageToState}
                   removeImageFromState={removeImageFromState}
                   isProductCreated={isProductCreated}
                 />
               </div>
             </div>
-
             <div className='mt-[25px] flex justify-end'>
               <div className='flex gap-4'>
                 <CustomButton
@@ -195,4 +239,4 @@ const AddBrandDiaglog = () => {
   )
 }
 
-export default AddBrandDiaglog
+export default EditCategoryDialog

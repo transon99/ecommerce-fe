@@ -17,6 +17,9 @@ const categoryApi = {
   getAll: () => {
     return axiosClient.get(`${url}/all`)
   },
+  getById: (id: string | undefined) => {
+    return axiosClient.get(`${url}/${id}`)
+  },
   getBaseCategory: () => {
     return axiosClient.get(`${url}/base-categories`)
   },

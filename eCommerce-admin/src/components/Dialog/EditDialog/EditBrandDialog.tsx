@@ -1,44 +1,50 @@
-// import { Button, Flex } from '@radix-ui/themes'
-import { PiPlusCircleBold } from 'react-icons/pi'
-// import * as Dialog from '@radix-ui/react-dialog'
 import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import * as React from 'react'
 import { toast } from 'react-toastify'
 import Swal from 'sweetalert2'
 
-import { API_URL_BRAND, API_URL_CATEGORY } from '@/constant/apiConstant'
+import brandApi from '@/apis/brandApi'
+import axiosClient from '@/axios/axiosClient'
+import SelectImageArea from '@/components/Input/SelectImageArea'
+import { API_URL_BRAND } from '@/constant/apiConstant'
+import { rules } from '@/utils/rules'
 import { Button } from '@radix-ui/themes'
+import { Fragment, useCallback, useEffect, useState } from 'react'
 import { FieldValues, useForm } from 'react-hook-form'
 import { MdEdit } from 'react-icons/md'
 import ActionBtn from '../../ActionBtn'
-import FileInput from '../../Input/FileInputSingle'
 import { Input } from '../../Input/Input'
 import CustomButton from '../../common/CustomButton'
+import { ImageType } from '../AddDialog/AddProductDialog'
 import '../index.css'
-import axiosClient from '@/axios/axiosClient'
 
 interface PropTypes {
-  varient: string
-  dataProps?: Brand
+  brandId?: string
 }
 
-interface InputProps {
-  textProps: string
-}
-
-const TextH = ({ textProps }: InputProps) => {
-  return <p className='text-primary my-2'>{textProps}</p>
-}
-
-const EditBrandDialog = ({ varient, dataProps }: PropTypes) => {
-  const [open, setOpen] = React.useState(false)
-  const [isLoading, setIsLoading] = React.useState(false)
+const EditBrandDialog = ({ brandId }: PropTypes) => {
+  const [open, setOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [brand, setBrand] = useState<Brand>()
+  const [images, setImages] = useState<ImageType[] | null>()
+  const [isProductCreated, setIsProductCreated] = useState(false)
   const theme = useTheme()
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'))
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await brandApi.getById(brandId)
+        setBrand(response.data)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
+    }
+    fetchData()
+  }, [])
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -51,54 +57,67 @@ const EditBrandDialog = ({ varient, dataProps }: PropTypes) => {
   const {
     register,
     handleSubmit,
+    setValue,
+    reset,
     formState: { errors }
-  } = useForm<FieldValues>({})
-
-  const handleEditBrand = async (data: any, dataProps: Brand | undefined) => {
-    console.log('dataPro', dataProps)
-    console.log('data:', data)
-    const reqConfig: BrandRequest = {
-      name: data.name
+  } = useForm<FieldValues>({
+    defaultValues: {
+      brandName: '',
+      images: []
     }
-    const formData = new FormData()
-    formData.append('data', JSON.stringify(reqConfig))
-    formData.append('image', data.imageUrl[0])
-    console.log('Form data', [...formData])
-    setIsLoading(true)
-    const result: responseType = await axiosClient.put(`${API_URL_BRAND}/${dataProps?.id}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+  })
+
+  useEffect(() => {
+    setCustomValue('images', images)
+  }, [images])
+
+  useEffect(() => {
+    setCustomValue('brandName', brand?.name)
+  }, [brand])
+
+  useEffect(() => {
+    if (isProductCreated) {
+      reset()
+      setImages(null)
+      setIsProductCreated(false)
+    }
+  }, [isProductCreated])
+
+  const setCustomValue = (id: string, value: any) => {
+    setValue(id, value, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true
     })
-    setIsLoading(false)
-
-    if (result.status === 'OK') {
-      Swal.fire({
-        title: 'Congratulations !',
-        text: result.message,
-        icon: 'success',
-        showCloseButton: true,
-        confirmButtonText: 'Close'
-      }).then(({ isConfirmed }) => {
-        if (isConfirmed) {
-          handleClose()
-          window.location.reload()
-        }
-      })
-    } else {
-      toast.error(result.message)
-    }
   }
 
-  const handleAddBrand = async (data: any) => {
-    const reqConfig: BrandRequest = {
-      name: data.name
-    }
+  const addImageToState = useCallback((value: ImageType) => {
+    setImages((prev) => {
+      if (!prev) {
+        return [value]
+      }
+      return [...prev, value]
+    })
+  }, [])
+
+  const removeImageFromState = useCallback((value: ImageType) => {
+    setImages((prev) => {
+      if (prev) {
+        const fileredImages = prev.filter((item) => item.imageOrder !== value.imageOrder)
+        return fileredImages
+      }
+      return prev
+    })
+  }, [])
+  const handleEditBrand = async (data: any) => {
     const formData = new FormData()
-    formData.append('data', JSON.stringify(reqConfig))
-    formData.append('image', data.imageUrl[0])
+    formData.append('name', data.brandName)
+    if (data?.images) {
+      formData.append('files', data?.images[0]?.image)
+    }
+    console.log('Form data', [...formData])
     setIsLoading(true)
-    const result: responseType = await axiosClient.post(API_URL_BRAND, formData, {
+    const result: responseType = await axiosClient.put(`${API_URL_BRAND}/${brandId}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -124,47 +143,45 @@ const EditBrandDialog = ({ varient, dataProps }: PropTypes) => {
   }
 
   return (
-    <React.Fragment>
+    <Fragment>
       <div onClick={handleClickOpen}>
-        {varient === 'ADD' ? (
-          <Button size='3' radius='full' className='w-full !cursor-pointer hover:bg-[#263E7B] bg-[#2f62ff3c] '>
-            Add new Brand
-            <PiPlusCircleBold />
-          </Button>
-        ) : (
-          <ActionBtn icon={MdEdit} />
-        )}
+        <ActionBtn icon={MdEdit} />
       </div>
       <Dialog fullScreen={fullScreen} open={open} onClose={handleClose} aria-labelledby='responsive-dialog-title'>
         <DialogTitle id='responsive-dialog-title' className='bg-[#171F29] text-primary' style={{ fontWeight: 'bold' }}>
-          {varient === 'ADD' ? 'Add Brand' : 'Edit Brand'}
+          Edit Brand
         </DialogTitle>
-        <DialogContent className='bg-[#171F29] '>
-          <p className='text-primary'>Brand Setting</p>
+        <DialogContent className='bg-[#171F29] min-w-[400px]'>
           <form
             className=''
             onSubmit={handleSubmit((data) => {
-              varient === 'ADD' ? handleAddBrand(data) : handleEditBrand(data, dataProps)
+              handleEditBrand(data)
             })}
           >
             <div className='gap-5 flex justify-between'>
               <div className='w-full'>
-                <TextH textProps='Brand Name' />
                 <Input
                   id='brandName'
                   register={register}
                   type='text'
-                  value={dataProps?.name}
-                  errors={errors}
+                  errorMessage={errors.brandName?.message?.toString()}
+                  rules={rules.brandName}
                   lable='Brand Name'
                   disabled={isLoading}
-                  required
                   placeholder='Enter categry name...'
                 />
               </div>
             </div>
-            <div className='mt-4 grid grid-cols-1 gap-4 md:grid-cols-2'>
-              <FileInput imageUrl={dataProps?.imageUrls} variant={varient} register={register} name='imageUrl' />
+            <label htmlFor='Select images' className='block mb-2 font-medium text-gray-900 dark:text-white'>
+              Select images
+            </label>
+            <div className='mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 text-white'>
+              <SelectImageArea
+                item={{ imageOrder: 'Brand ', image: null }}
+                addImageToState={addImageToState}
+                removeImageFromState={removeImageFromState}
+                isProductCreated={isProductCreated}
+              />
             </div>
             <div className='mt-[25px] flex justify-end'>
               <div className='flex gap-4'>
@@ -186,7 +203,7 @@ const EditBrandDialog = ({ varient, dataProps }: PropTypes) => {
           </form>
         </DialogContent>
       </Dialog>
-    </React.Fragment>
+    </Fragment>
   )
 }
 

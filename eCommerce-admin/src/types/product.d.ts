@@ -4,7 +4,7 @@ type Product = {
   description?: string
   thumbnailUrls?: any
   sku?: string
-  priceUnit?: number
+  price?: number
   brand?: Brand
   quantity?: number
   category?: Category
@@ -16,7 +16,7 @@ type ProductRequest = {
   description?: string
   imageUrls?: any
   sku?: string
-  priceUnit?: number
+  price?: number
   brandId?: string
   quantity?: number
   categoryId?: string
