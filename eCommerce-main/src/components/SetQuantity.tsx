@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { CartProductType } from '@/app/product/[productId]/ProductDetail';
-import React from 'react';
+import { CartProductType } from "@/app/product/[productId]/ProductDetail";
+import React from "react";
 
 interface SetQtyProps {
   cartCounter?: boolean;
@@ -10,7 +10,7 @@ interface SetQtyProps {
   handleQtyDecrease: () => void;
 }
 
-const btnStyle = 'border-[1.2px] border-slate-300 px-2 rounded';
+const btnStyle = "border-[1.2px] border-slate-300 px-2 rounded";
 
 const SetQuantity = ({
   cartCounter,

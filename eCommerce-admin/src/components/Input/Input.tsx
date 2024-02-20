@@ -15,7 +15,6 @@ type InputProps = {
 }
 
 export const Input = ({ id, lable, type, disabled, register, value, placeholder, errorMessage, rules }: InputProps) => {
-  console.log('error:', errorMessage)
   return (
     <div className='w-full '>
       <label htmlFor={id} className='block mb-2  font-medium text-gray-900 dark:text-white'>

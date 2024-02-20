@@ -9,6 +9,7 @@ interface ProductReelProps {
   subtitle?: string;
   href?: string;
   products: Product[];
+  rate: number;
 }
 
 const ProductReel = (props: ProductReelProps) => {

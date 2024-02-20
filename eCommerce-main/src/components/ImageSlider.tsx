@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface ImageSliderProps {
-  urls: string[];
+  urls: ImageUrl[];
 }
 
 const ImageSlider = ({ urls }: ImageSliderProps) => {
@@ -88,7 +88,7 @@ const ImageSlider = ({ urls }: ImageSliderProps) => {
               fill
               loading="eager"
               className="-z-10 h-full w-full object-cover object-center"
-              src={url}
+              src={url.thumbnailUrl}
               alt="Product image"
             />
           </SwiperSlide>

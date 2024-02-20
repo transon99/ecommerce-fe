@@ -1,95 +1,47 @@
 "use client";
 
 import Link from "next/link";
+import MaxWidthWrapper from "../ui/MaxWidthWrapper";
+import FooterList from "./FooterList";
 
 const Footer = () => {
   return (
     <>
-      <footer className="bg-[#191919] dark:bg-gray-900">
+      <footer className="bg-slate-700 text-slate-200 text-sm mt-16">
         <div className="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
-          <div className="md:flex md:justify-between">
-            <div className="mb-6 md:mb-0">
-              <Link href="https://flowbite.com/" className="flex items-center">
-                <img
-                  src="https://flowbite.com/docs/images/logo.svg"
-                  className="h-8 me-3"
-                  alt="FlowBite Logo"
-                />
-                <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
-                  Flowbite
-                </span>
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">
-              <div>
-                <h2 className="mb-6 text-sm font-semibold text-white uppercase dark:text-white">
-                  Resources
-                </h2>
-                <ul className="text-gray-500 dark:text-gray-400 font-medium">
-                  <li className="mb-4">
-                    <Link
-                      href="https://flowbite.com/"
-                      className="hover:underline"
-                    >
-                      Flowbite
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="https://tailwindcss.com/"
-                      className="hover:underline"
-                    >
-                      Tailwind CSS
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h2 className="mb-6 text-sm font-semibold text-white uppercase dark:text-white">
-                  Follow us
-                </h2>
-                <ul className="text-gray-500 dark:text-gray-400 font-medium">
-                  <li className="mb-4">
-                    <Link
-                      href="https://github.com/themesberg/flowbite"
-                      className="hover:underline "
-                    >
-                      Github
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="https://discord.gg/4eeurUVvTy"
-                      className="hover:underline"
-                    >
-                      Discord
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h2 className="mb-6 text-sm font-semibold text-white uppercase dark:text-white">
-                  Legal
-                </h2>
-                <ul className="text-gray-500 dark:text-gray-400 font-medium">
-                  <li className="mb-4">
-                    <Link href="#" className="hover:underline">
-                      Privacy Policy
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="#" className="hover:underline">
-                      Terms &amp; Conditions
-                    </Link>
-                  </li>
-                </ul>
-              </div>
+          <div className="flex flex-col md:flex-row justify-between ">
+            <FooterList>
+              <h3 className="text-base font-bold mb-2">Shop Categories</h3>
+              <Link href="#">CPU</Link>
+              <Link href="#">Ram</Link>
+              <Link href="#">GPU</Link>
+              <Link href="#">Main</Link>
+              <Link href="#">Monitor</Link>
+            </FooterList>
+
+            <FooterList>
+              <h3 className="text-base font-bold mb-2">Customer Service</h3>
+              <Link href="#">Contact Us</Link>
+              <Link href="#">Shipping Policy</Link>
+              <Link href="#">Returns & Exchanges</Link>
+              <Link href="#">Watches</Link>
+              <Link href="#">FAQs</Link>
+            </FooterList>
+
+            <div className="w-full md:w-1/3 mb-6 md:mb-0">
+              <h3 className="text-base font-bold mb-2">About Us</h3>
+              <p className="">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel
+                delectus, repellendus expedita praesentium fugiat, quasi atque
+                tempore deleniti ab nisi, aut molestias numquam dolore
+                consequatur aliquam quae reprehenderit? Iste, hic!
+              </p>
             </div>
           </div>
           <hr className="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
           <div className="sm:flex sm:items-center sm:justify-between">
-            <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
-              © 2023{" "}
+            <span className="text-sm text-white sm:text-center dark:text-gray-400">
+              © {new Date().getFullYear()}{" "}
               <Link href="https://flowbite.com/" className="hover:underline">
                 Flowbite™
               </Link>
@@ -98,7 +50,7 @@ const Footer = () => {
             <div className="flex mt-4 sm:justify-center sm:mt-0">
               <Link
                 href="#"
-                className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
+                className="text-white hover:text-gray-900 dark:hover:text-white"
               >
                 <svg
                   className="w-4 h-4"
@@ -117,7 +69,7 @@ const Footer = () => {
               </Link>
               <Link
                 href="#"
-                className="text-gray-500 hover:text-gray-900 dark:hover:text-white ms-5"
+                className="text-white hover:text-gray-900 dark:hover:text-white ms-5"
               >
                 <svg
                   className="w-4 h-4"
@@ -132,7 +84,7 @@ const Footer = () => {
               </Link>
               <Link
                 href="#"
-                className="text-gray-500 hover:text-gray-900 dark:hover:text-white ms-5"
+                className="text-white hover:text-gray-900 dark:hover:text-white ms-5"
               >
                 <svg
                   className="w-4 h-4"
@@ -151,7 +103,7 @@ const Footer = () => {
               </Link>
               <Link
                 href="#"
-                className="text-gray-500 hover:text-gray-900 dark:hover:text-white ms-5"
+                className="text-white hover:text-gray-900 dark:hover:text-white ms-5"
               >
                 <svg
                   className="w-4 h-4"
@@ -170,7 +122,7 @@ const Footer = () => {
               </Link>
               <Link
                 href="#"
-                className="text-gray-500 hover:text-gray-900 dark:hover:text-white ms-5"
+                className="text-white hover:text-gray-900 dark:hover:text-white ms-5"
               >
                 <svg
                   className="w-4 h-4"

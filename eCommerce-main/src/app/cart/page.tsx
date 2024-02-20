@@ -1,9 +1,17 @@
-import React from 'react';
+import MaxWidthWrapper from "@/components/ui/MaxWidthWrapper";
+import React from "react";
+import CartClient from "./CartClient";
 
-type PageProps = {};
+type CartProps = {};
 
-const Page = (props: PageProps) => {
-  return <div>Page</div>;
+const Cart = (props: CartProps) => {
+  return (
+    <div className="pt-8">
+      <MaxWidthWrapper>
+        <CartClient />
+      </MaxWidthWrapper>
+    </div>
+  );
 };
 
-export default Page;
+export default Cart;

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { IoMdStar } from "react-icons/io";
 
 import { cn } from "@/lib/utils";
 import ImageSlider from "./ImageSlider";
 import { Skeleton } from "./ui/skeleton";
 import { formatPrice } from "@/lib/formatPrice";
+import { convertRate } from "@/utils/convertRate";
 interface ProductListingProps {
   product: Product | null;
   index: number;
@@ -31,18 +33,27 @@ const ProductListing = ({ product, index }: ProductListingProps) => {
         })}
         href={`/product/${product.id}`}
       >
-        <div className="flex flex-col w-full">
+        <div className="flex flex-col w-full ">
           <ImageSlider urls={product.imageUrls} />
-
-          <h3 className="mt-4 font-medium text-sm text-gray-700 dark:text-gray-300">
-            {product.name}
-          </h3>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {product.category.name}
-          </p>
-          <p className="mt-1 font-medium text-sm text-gray-900 dark:text-gray-50">
-            {formatPrice(product.price)}
-          </p>
+          <div className="flex justify-between">
+            <div className="flex flex-col w-full">
+              <div className="flex justify-between mt-4">
+                <h3 className="font-medium text-sm text-gray-700 dark:text-gray-300">
+                  {product.name}
+                </h3>
+                <div className="flex justify-center items-center">
+                  <IoMdStar />
+                  <p>{convertRate(product?.rate)}</p>
+                </div>
+              </div>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                {product.category.name}
+              </p>
+              <p className="mt-1 font-medium text-sm text-gray-900 dark:text-gray-50">
+                {formatPrice(product.price)}
+              </p>
+            </div>
+          </div>
         </div>
       </Link>
     );

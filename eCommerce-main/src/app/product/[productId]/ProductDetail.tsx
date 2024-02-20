@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import SetQuantity from '@/components/SetQuantity';
-import { Button } from '@/components/ui/button';
-import { formatPrice } from '@/lib/formatPrice';
-import { Rating } from '@mui/material';
-import React, { useCallback, useEffect, useState } from 'react';
-import ProductSupportItem from './ProductSupportItem';
-import { IconType } from 'react-icons';
-import { FaShieldAlt } from 'react-icons/fa';
-import { MdCheckCircle, MdOutlineLocalShipping } from 'react-icons/md';
-import { CiGift } from 'react-icons/ci';
-import { MdOutlineContactPhone } from 'react-icons/md';
-import { IoIosReturnLeft } from 'react-icons/io';
-import ProductImage from './ProductImage';
-import { useCart } from '@/store/useCart';
-import { useRouter } from 'next/navigation';
+import SetQuantity from "@/components/SetQuantity";
+import { Button } from "@/components/ui/button";
+import { formatPrice } from "@/lib/formatPrice";
+import { Rating } from "@mui/material";
+import React, { useCallback, useEffect, useState } from "react";
+import ProductSupportItem from "./ProductSupportItem";
+import { IconType } from "react-icons";
+import { FaShieldAlt } from "react-icons/fa";
+import { MdCheckCircle, MdOutlineLocalShipping } from "react-icons/md";
+import { CiGift } from "react-icons/ci";
+import { MdOutlineContactPhone } from "react-icons/md";
+import { IoIosReturnLeft } from "react-icons/io";
+import ProductImage from "./ProductImage";
+import { useCart } from "@/store/useCart";
+import { useRouter } from "next/navigation";
 
 type ProductDetailProps = {
   product: Product;
@@ -40,28 +40,28 @@ export type ProductSupportItemProps = {
 const productSupport: ProductSupportItemProps[] = [
   {
     Icon: FaShieldAlt,
-    firstContent: 'Guarantee',
-    secondContent: 'Quality Checked',
+    firstContent: "Guarantee",
+    secondContent: "Quality Checked",
   },
   {
     Icon: MdOutlineLocalShipping,
-    firstContent: 'Free Shipping',
-    secondContent: 'Free On All Products',
+    firstContent: "Free Shipping",
+    secondContent: "Free On All Products",
   },
   {
     Icon: CiGift,
-    firstContent: 'Special Gift Cards',
-    secondContent: 'Special Gift Cards',
+    firstContent: "Special Gift Cards",
+    secondContent: "Special Gift Cards",
   },
   {
     Icon: MdOutlineContactPhone,
-    firstContent: 'Consultancy',
-    secondContent: 'Lifetime 24/7/356',
+    firstContent: "Consultancy",
+    secondContent: "Lifetime 24/7/356",
   },
   {
     Icon: IoIosReturnLeft,
-    firstContent: 'Free Return',
-    secondContent: 'Within 7 Days',
+    firstContent: "Free Return",
+    secondContent: "Within 7 Days",
   },
 ];
 
@@ -71,7 +71,7 @@ const Horizontal = () => {
 
 const ProductDetail = ({ product }: ProductDetailProps) => {
   const cart = useCart();
-  const cartProducts = cart.items;
+  const cartProducts = cart.cartProducts;
   const router = useRouter();
   const [isProductInCart, setIsProductInCart] = useState(false);
   const [cartProduct, setCartProduct] = useState<CartProductType>({
@@ -84,7 +84,6 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
     quantity: 1,
     price: product.salePrice,
   });
-
   useEffect(() => {
     setIsProductInCart(false);
     if (cartProducts) {
@@ -95,7 +94,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
         setIsProductInCart(true);
       }
     }
-  }, [cartProduct]);
+  }, [cartProducts]);
 
   const handleQtyDecrease = useCallback(() => {
     if (cartProduct.quantity === 1) {
@@ -147,13 +146,13 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
           <div className="pl-5 col-span-4 flex flex-col text-slate-500">
             <div className="bg-[#F7F7F7] p-3 rounded-xl mb-2">
               <div className="flex items-center">
-                Price:{' '}
+                Price:{" "}
                 <span className="font-semibold text-xl line-through text-gray-700 ml-[60px]">
                   {formatPrice(product.price)}
                 </span>
               </div>
               <div className="flex items-center">
-                Sale Price:{' '}
+                Sale Price:{" "}
                 <span className="font-semibold text-xl text-[#ed1b24] ml-[28px]">
                   {formatPrice(product.salePrice)}
                 </span>
@@ -179,10 +178,10 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
             </div>
             <div
               className={
-                product.quantity > 0 ? 'text-teal-400' : 'text-rose-400'
+                product.quantity > 0 ? "text-teal-400" : "text-rose-400"
               }
             >
-              {product.quantity > 0 ? 'In stock' : 'Out of stock'}
+              {product.quantity > 0 ? "In stock" : "Out of stock"}
             </div>
             <Horizontal />
 
@@ -196,7 +195,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
                   <Button
                     className="w-full focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
                     onClick={() => {
-                      router.push('/cart');
+                      router.push("/cart");
                     }}
                   >
                     View Cart
