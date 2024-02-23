@@ -1,73 +1,39 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
-import NavItem from "./NavItem";
-import { useOnClickOutside } from "@/hooks/use-click-outside";
-import categoryApi from "@/apis/categoryApi";
+import { useEffect, useRef, useState } from 'react';
+import NavItem from './NavItem';
+import { useOnClickOutside } from '@/hooks/use-click-outside';
+import categoryApi from '@/apis/categoryApi';
+import { Navigation } from '.';
+import MaxWidthWrapper from '../ui/MaxWidthWrapper';
+import { usePathname, useSearchParams } from 'next/navigation';
+interface NavbarItemProps {
+  categories: Navigation[];
+}
 
-const NavItems = () => {
-  const [categoriesData, setCategoriesData] = useState<Category[]>();
-  console.log(categoriesData);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await categoryApi.getBaseCategories();
-        setCategoriesData(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, []);
+const NavItems = ({ categories }: NavbarItemProps) => {
   const [activeIndex, setActiveIndex] = useState<null | number>(null);
 
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setActiveIndex(null);
-      }
-    };
+  const params = useSearchParams();
+  const category = params?.get('category');
+  const pathname = usePathname();
 
-    document.addEventListener("keydown", handler);
+  // const isMainPage = pathname === '/';
 
-    return () => {
-      document.removeEventListener("keydown", handler);
-    };
-  }, []);
-
-  const isAnyOpen = activeIndex !== null;
-
-  const navRef = useRef<HTMLDivElement | null>(null);
-
-  useOnClickOutside(navRef, () => setActiveIndex(null));
+  // if (!isMainPage) return null;
 
   return (
-    <div className="flex gap-4 h-full" ref={navRef}>
-      {categoriesData?.map((category, i) => {
-        const handleOpen = () => {
-          if (activeIndex === i) {
-            setActiveIndex(null);
-          } else {
-            setActiveIndex(i);
+    <div className="pt-4 flex flex-row items-center justify-between overflow-x-auto">
+      {categories.map((item) => (
+        <NavItem
+          category={item}
+          selected={
+            category === item.label ||
+            (category === null && item.label === 'All')
           }
-        };
-
-        const close = () => setActiveIndex(null);
-
-        const isOpen = i === activeIndex;
-
-        return (
-          <NavItem
-            category={category}
-            close={close}
-            handleOpen={handleOpen}
-            isOpen={isOpen}
-            key={category.name}
-            isAnyOpen={isAnyOpen}
-          />
-        );
-      })}
+          key={item.label}
+        />
+      ))}
     </div>
   );
 };

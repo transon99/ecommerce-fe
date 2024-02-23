@@ -1,17 +1,18 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/pagination";
-import type SwiperType from "swiper";
-import React, { useEffect, useState } from "react";
-import { ShoppingBag } from "lucide-react";
-import { Pagination } from "swiper/modules";
-import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import Image from 'next/image';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import type SwiperType from 'swiper';
+import React, { useEffect, useState } from 'react';
+import { ShoppingBag } from 'lucide-react';
+import { Pagination } from 'swiper/modules';
+import { cn } from '@/lib/utils';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-import { Button } from "../ui/button";
+import { Button } from '../ui/button';
+import { useUser } from '@/store/useUser';
 
 interface ImageSliderProps {
   urls: string[];
@@ -20,6 +21,8 @@ interface ImageSliderProps {
 export const Hero = ({ urls }: ImageSliderProps) => {
   const [swiper, setSwiper] = useState<null | SwiperType>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const { userInfo } = useUser();
+  console.log('=======>', userInfo);
 
   const [slideConfig, setSlideConfig] = useState({
     isBeginning: true,
@@ -27,7 +30,7 @@ export const Hero = ({ urls }: ImageSliderProps) => {
   });
 
   useEffect(() => {
-    swiper?.on("slideChange", ({ activeIndex }) => {
+    swiper?.on('slideChange', ({ activeIndex }) => {
       setActiveIndex(activeIndex);
       setSlideConfig({
         isBeginning: activeIndex === 0,
@@ -37,8 +40,8 @@ export const Hero = ({ urls }: ImageSliderProps) => {
   }, [swiper, urls]);
 
   const activeStyles =
-    "active:scale-[0.97] grid opacity-100 hover:scale-105 absolute top-1/2 -translate-y-1/2 aspect-video h-8 w-8 z-50 place-items-center rounded-full border-2 bg-white border-zinc-300";
-  const inactiveStyles = "hidden text-gray-400";
+    'active:scale-[0.97] grid opacity-100 hover:scale-105 absolute top-1/2 -translate-y-1/2 aspect-video h-8 w-8 z-50 place-items-center rounded-full border-2 bg-white border-zinc-300';
+  const inactiveStyles = 'hidden text-gray-400';
   return (
     <div className="group relative bg-zinc-100 aspect-video overflow-hidden mt-5 z-0">
       <div className="absolute z-10 inset-0 opacity-0 group-hover:opacity-100 transition">
@@ -47,28 +50,28 @@ export const Hero = ({ urls }: ImageSliderProps) => {
             e.preventDefault();
             swiper?.slideNext();
           }}
-          className={cn(activeStyles, "right-3 transition", {
+          className={cn(activeStyles, 'right-3 transition', {
             [inactiveStyles]: slideConfig.isEnd,
-            "hover:bg-primary-300 text-primary-800 opacity-100":
+            'hover:bg-primary-300 text-primary-800 opacity-100':
               !slideConfig.isEnd,
           })}
           aria-label="next image"
         >
-          <ChevronRight className="h-4 w-4 text-zinc-700" />{" "}
+          <ChevronRight className="h-4 w-4 text-zinc-700" />{' '}
         </button>
         <button
           onClick={(e) => {
             e.preventDefault();
             swiper?.slidePrev();
           }}
-          className={cn(activeStyles, "left-3 transition", {
+          className={cn(activeStyles, 'left-3 transition', {
             [inactiveStyles]: slideConfig.isBeginning,
-            "hover:bg-primary-300 text-primary-800 opacity-100":
+            'hover:bg-primary-300 text-primary-800 opacity-100':
               !slideConfig.isBeginning,
           })}
           aria-label="previous image"
         >
-          <ChevronLeft className="h-4 w-4 text-zinc-700" />{" "}
+          <ChevronLeft className="h-4 w-4 text-zinc-700" />{' '}
         </button>
       </div>
 

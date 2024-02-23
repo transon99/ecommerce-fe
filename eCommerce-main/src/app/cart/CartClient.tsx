@@ -1,19 +1,87 @@
-"use client";
+'use client';
 
-import Heading from "@/components/Heading";
-import { Button } from "@/components/ui/button";
-import { useCart } from "@/store/useCart";
-import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import { MdArrowBack } from "react-icons/md";
-import ItemContent from "./ItemContent";
-import { formatPrice } from "@/lib/formatPrice";
+import Heading from '@/components/Heading';
+import { Button } from '@/components/ui/button';
+import { useCart } from '@/store/useCart';
+import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
+import { MdArrowBack } from 'react-icons/md';
+import ItemContent from './ItemContent';
+import { formatPrice } from '@/lib/formatPrice';
+import checkoutApi from '@/apis/checkoutApi';
+import { STRIPE } from '@/constant/paymentMethod';
+import { useUser } from '@/store/useUser';
+import { CgSpinner } from 'react-icons/cg';
+
+import routes from '@/routes';
+import { useRouter } from 'next/navigation';
+import { PENDING, SUCCESS_STATUS } from '@/constant/commonConstant';
+import orderApi from '@/apis/orderApi';
 
 type Props = {};
 
 const CartClient = (props: Props) => {
-  const { cartProducts, setTotalAndQty, clearCart, totalPrice } = useCart();
+  const { cartProducts, clearCart, totalPrice } = useCart();
+
+  const { userInfo } = useUser();
+
   const [cartTotalAmout, setCartTotalAmout] = useState<number>(totalPrice);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
+
+  const orderItemRequest: OrderItemDto[] = cartProducts.map((product) => {
+    return {
+      productId: product.id,
+      userId: userInfo?.id,
+      quantity: product.quantity,
+    };
+  });
+
+  const orderData: OrderRequest = {
+    userId: userInfo?.id,
+    totalPrice: totalPrice,
+    deliveryAddress: 'userInfo?.addresses?.toString() ',
+    status: PENDING,
+    orderItemRequest: orderItemRequest,
+  };
+
+  const handleCheckout = async () => {
+    console.log(orderData);
+    setIsLoading(true);
+    const orderResponse = await orderApi.createOrder(orderData);
+    console.log('orderResponse: ', orderResponse);
+    const stripeItemList: StripeItem[] = cartProducts.map((product) => {
+      return {
+        price: product.price,
+        quantity: product.quantity,
+        productName: product.name,
+        productId: product.id,
+        userId: userInfo?.id,
+      };
+    });
+
+    const stripeRequest: StripeRequest = {
+      orderId: orderResponse?.data,
+      stripeItemList,
+    };
+
+    const checkoutData: CheckoutRequest = {
+      paymentMethod: STRIPE,
+      totalPrice: totalPrice,
+      stripeRequest,
+    };
+
+    console.log(checkoutData);
+    const checkoutResponse = await checkoutApi.checkout(checkoutData);
+    setIsLoading(false);
+
+    if (
+      checkoutResponse.status === SUCCESS_STATUS &&
+      orderResponse.status === SUCCESS_STATUS
+    ) {
+      router.push(checkoutResponse.data);
+    }
+  };
 
   useEffect(() => {
     setCartTotalAmout(totalPrice);
@@ -25,7 +93,7 @@ const CartClient = (props: Props) => {
         <div className="text-2xl">Your cart is empty</div>
         <div>
           <Link
-            href={"/"}
+            href={'/'}
             className="text-slate-500 flex items-center gap-1 mt-2"
           >
             <MdArrowBack />
@@ -37,7 +105,7 @@ const CartClient = (props: Props) => {
   }
 
   return (
-    <div>
+    <>
       <Heading title="Shopping Cart" center />
       <div className="grid grid-cols-5 text-xs gap-4 pb-2 items-cente mt-8">
         <div className="col-span-2 justify-self-start">PRODUCT</div>
@@ -72,11 +140,23 @@ const CartClient = (props: Props) => {
           <p className="text-slate-500">
             Taxes and shipping calculate at checkout
           </p>
-          <Button onClick={() => {}} className="w-full">
-            Checkout
-          </Button>
+          {userInfo ? (
+            <Button onClick={handleCheckout} className="w-full relative">
+              {isLoading && (
+                <span className="animate-spin absolute left-0 px-2">
+                  <CgSpinner />
+                </span>
+              )}
+              {isLoading ? 'Loading...' : 'Checkout'}
+            </Button>
+          ) : (
+            <Button onClick={() => router.push('/login')} className="w-full">
+              Go to login
+            </Button>
+          )}
+
           <Link
-            href={"/"}
+            href={'/'}
             className="text-slate-500 flex items-center gap-1 mt-2"
           >
             <MdArrowBack />
@@ -84,7 +164,7 @@ const CartClient = (props: Props) => {
           </Link>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

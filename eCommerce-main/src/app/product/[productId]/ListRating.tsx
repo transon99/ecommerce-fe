@@ -28,7 +28,7 @@ const ListRating = ({ reviews }: ListRatingProps) => {
                     {review?.user?.firstName + review?.user?.lastName}
                   </div>
                   <div className="font-light">
-                    {moment(review.createdAt).fromNow()}
+                    {moment(review.createDate).fromNow()}
                   </div>
                 </div>
                 <div className="mt-2">

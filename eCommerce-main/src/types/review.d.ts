@@ -9,5 +9,5 @@ interface Review {
 
   product: Product;
 
-  createdAt: Date;
+  createDate: Date;
 }

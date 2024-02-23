@@ -1,16 +1,13 @@
-import useApi from "@/axios/apiConfig";
-import { API_URL_CATEGORY } from "@/constant/apiConstant";
+import axiosClient from '@/axios/apiConfig';
+import { API_URL_CATEGORY } from '@/constant/apiConstant';
 
-const axiosClient = useApi();
-
+const url = API_URL_CATEGORY;
 const categoryApi = {
   getAllCategories: () => {
-    const url = `${API_URL_CATEGORY}`;
     return axiosClient.get(url);
   },
   getBaseCategories: () => {
-    const url = `${API_URL_CATEGORY}/base-categories`;
-    return axiosClient.get(url);
+    return axiosClient.get(`${url}/base-categories`);
   },
 };
 

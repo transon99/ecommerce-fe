@@ -1,18 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import categoryApi from '@/apis/categoryApi';
+'use client';
+import { Navigation } from '.';
 import MaxWidthWrapper from '../ui/MaxWidthWrapper';
 import NavItems from './NavItems';
+interface NavbarProps {
+  categories: Navigation[];
+}
 
-const Navbar = () => {
+const Navbar = ({ categories }: NavbarProps) => {
   return (
-    <header className="relative ">
+    <header className="relative bg-white">
       <MaxWidthWrapper>
-        <div className="border-b border-gray-200">
-          <div className="flex items-center">
-            <div className="hidden z-50 lg:block lg:self-stretch">
-              {/* <NavItems /> */}
-            </div>
-          </div>
+        <div className=" border-b-gray-200">
+          <NavItems categories={categories} />
         </div>
       </MaxWidthWrapper>
     </header>

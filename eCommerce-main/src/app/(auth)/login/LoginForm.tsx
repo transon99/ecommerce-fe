@@ -1,24 +1,25 @@
-import Heading from "@/components/Heading";
-import Cookies from "js-cookie";
-import { useState } from "react";
+import Heading from '@/components/Heading';
+import Cookies from 'js-cookie';
+import { useState } from 'react';
 
-import { FieldValues, useForm } from "react-hook-form";
-import { toast } from "react-toastify";
+import { FieldValues, useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 
-import authApi from "@/apis/authApi";
-import { Button } from "@/components/ui/button";
-import routes from "@/routes";
-import { useUser } from "@/store/useUser";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import Input from "@/components/Input/Input";
-import { rules } from "@/utils/rules";
+import authApi from '@/apis/authApi';
+import { Button } from '@/components/ui/button';
+import routes from '@/routes';
+import { useUser } from '@/store/useUser';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import Input from '@/components/Input/Input';
+import { rules } from '@/utils/rules';
+import { CgSpinner } from 'react-icons/cg';
 
 type LoginFormProps = {};
 
 const LoginForm = (props: LoginFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const setUserInfo = useUser((state) => state.setUserInfo);
+  const { setIsLogined } = useUser();
   const router = useRouter();
 
   const {
@@ -27,20 +28,20 @@ const LoginForm = (props: LoginFormProps) => {
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
   });
 
-  const handleLogin = async (data: LoginResquest) => {
+  const handleLogin = async (data: any) => {
     setIsLoading(true);
     const response = await authApi.login(data);
-    console.log(response);
     setIsLoading(false);
-    if (response.data.status === "OK") {
-      Cookies.set("accessToken", response.data.accessToken, { expires: 100 });
-      Cookies.set("refreshToken", response.data.refreshToken, { expires: 100 });
-      setUserInfo(response.data);
+    if (response.data.status === 'OK') {
+      Cookies.set('accessToken', response.data.accessToken, { expires: 100 });
+      Cookies.set('refreshToken', response.data.refreshToken, { expires: 100 });
+      Cookies.set('isLogined', true.toString());
+      setIsLogined(true);
       router.push(routes.home);
     } else {
       toast.error(response.data.message);
@@ -50,7 +51,10 @@ const LoginForm = (props: LoginFormProps) => {
     <>
       <Heading title="Sign in to your account" center />
       <hr className="bg-slate-300 w-full h-px" />
-      <form className="space-y-4 md:space-y-6" action="#">
+      <form
+        className="space-y-4 md:space-y-6"
+        onSubmit={handleSubmit((data) => handleLogin(data))}
+      >
         <div>
           <Input
             id="email"
@@ -69,7 +73,7 @@ const LoginForm = (props: LoginFormProps) => {
             register={register}
             type="password"
             placeholder="••••••••"
-            lable="Your email"
+            lable="Password"
             errorMessage={errors.password?.message?.toString()}
             rules={rules.password}
             disabled={isLoading}
@@ -106,10 +110,15 @@ const LoginForm = (props: LoginFormProps) => {
           type="submit"
           className="w-full focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
         >
-          Sign in
+          {isLoading && (
+            <span className="animate-spin">
+              <CgSpinner />
+            </span>
+          )}
+          {isLoading ? 'Loading...' : 'Sign in'}
         </Button>
         <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-          Don’t have an account yet?{" "}
+          Don’t have an account yet?{' '}
           <Link
             href="register"
             className="font-medium text-primary-600 hover:underline dark:text-primary-500"

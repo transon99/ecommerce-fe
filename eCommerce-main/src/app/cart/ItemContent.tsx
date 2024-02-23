@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import React, { useCallback, useEffect, useState } from "react";
-import { CartProductType } from "../product/[productId]/ProductDetail";
-import { formatPrice } from "@/lib/formatPrice";
-import Link from "next/link";
-import Image from "next/image";
-import SetQuantity from "@/components/SetQuantity";
-import { useCart } from "@/store/useCart";
-import { toast } from "react-toastify";
+import React, { useCallback, useEffect, useState } from 'react';
+import { CartProductType } from '../product/[productId]/ProductDetail';
+import { formatPrice } from '@/lib/formatPrice';
+import Link from 'next/link';
+import Image from 'next/image';
+import SetQuantity from '@/components/SetQuantity';
+import { useCart } from '@/store/useCart';
+import { toast } from 'react-toastify';
 
 type ItemContentProps = {
   item: CartProductType;
@@ -25,20 +25,18 @@ const ItemContent = ({ item }: ItemContentProps) => {
   useEffect(() => {
     const getTotal = () => {
       if (cartProducts) {
-        const { total, qty } = cartProducts.reduce(
+        const { total } = cartProducts.reduce(
           (acc, item) => {
             const itemTotal = item.price * item.quantity;
             acc.total += itemTotal;
-            acc.qty += item.quantity;
 
             return acc;
           },
           {
             total: 0,
-            qty: 0,
           }
         );
-        cart.setTotalAndQty(total, qty);
+        cart.setTotal(total);
       }
     };
     getTotal();
@@ -49,7 +47,7 @@ const ItemContent = ({ item }: ItemContentProps) => {
       console.log(product);
       let updateCart;
       if (product.quantity === 1) {
-        return toast.error("Oops, Minimum reached");
+        return toast.error('Oops, Minimum reached');
       }
 
       if (cartProducts) {
@@ -66,7 +64,7 @@ const ItemContent = ({ item }: ItemContentProps) => {
 
         updateCartFun(updateCart);
         setCartProducts(updateCart);
-        localStorage.setItem("cart-storage", JSON.stringify(updateCart));
+        localStorage.setItem('cart-storage', JSON.stringify(updateCart));
       }
     },
     [cartProducts]
@@ -76,7 +74,7 @@ const ItemContent = ({ item }: ItemContentProps) => {
     (product: CartProductType) => {
       let updateCart;
       if (product.quantity === 99) {
-        return toast.error("Oops, Maximum reached");
+        return toast.error('Oops, Maximum reached');
       }
 
       if (cartProducts) {
@@ -93,7 +91,7 @@ const ItemContent = ({ item }: ItemContentProps) => {
 
         updateCartFun(updateCart);
         setCartProducts(updateCart);
-        localStorage.setItem("cart-storage", JSON.stringify(updateCart));
+        localStorage.setItem('cart-storage', JSON.stringify(updateCart));
       }
     },
     [cartProducts]

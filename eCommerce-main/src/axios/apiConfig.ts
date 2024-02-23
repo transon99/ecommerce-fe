@@ -1,68 +1,93 @@
-import axios from "axios";
-import queryString from "query-string";
-import Cookies from "js-cookie";
+import axios from 'axios';
+import queryString from 'query-string';
+import Cookies from 'js-cookie';
 
-const useApi = () => {
-  const instance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
-    headers: {
-      "content-type": "application/json",
-    },
-    paramsSerializer: (params) => queryString.stringify(params),
-  });
+const axiosClient = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
+  headers: {
+    'content-type': 'application/json',
+  },
+  paramsSerializer: (params) => queryString.stringify(params),
+});
 
-  instance.interceptors.request.use(
-    (config) => {
-      const accessToken = Cookies.get("accessToken");
+axiosClient.interceptors.request.use(
+  (config) => {
+    const accessToken = Cookies.get('accessToken');
 
-      if (accessToken && !config.headers["Authorization"]) {
-        config.headers["Authorization"] = `Bearer ${accessToken}`;
-      }
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
+    if (accessToken && !config.headers['Authorization']) {
+      config.headers['Authorization'] = `Bearer ${accessToken}`;
     }
-  );
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
-  instance.interceptors.response.use(
-    (response) => {
-      return response.data;
-    },
-    async (error) => {
-      const { response, config } = error;
-      const status = response?.status;
-      if (
-        status === 403 &&
-        Cookies.get("refreshToken") &&
-        response.data.message === "Invalid token"
-      ) {
-        const refreshTokenLocal = Cookies.get("refreshToken");
+axiosClient.interceptors.response.use(
+  (response) => {
+    return response.data;
+  },
+  async (error) => {
+    const { response, config } = error;
+    const status = response?.status;
+    if (
+      status === 403 &&
+      Cookies.get('refreshToken') &&
+      response.data.message === 'Invalid token'
+    ) {
+      const refreshTokenLocal = Cookies.get('refreshToken');
 
-        try {
-          const { accessToken, refreshToken } = (
-            await instance.post(`/refreshToken`, {
-              refreshToken: refreshTokenLocal,
-            })
-          ).data;
+      try {
+        const { accessToken, refreshToken } = (
+          await axiosClient.post(`/refreshToken`, {
+            refreshToken: refreshTokenLocal,
+          })
+        ).data;
 
-          Cookies.set("accessToken", accessToken, { expires: 100 });
-          Cookies.set("refreshToken", refreshToken, { expires: 100 });
+        Cookies.set('accessToken', accessToken, { expires: 100 });
+        Cookies.set('refreshToken', refreshToken, { expires: 100 });
 
-          config.headers["Authorization"] = `Bearer ${accessToken}`;
+        config.headers['Authorization'] = `Bearer ${accessToken}`;
 
-          return Promise.resolve(instance.request(config));
-        } catch (error) {
-          return Promise.reject(error);
-        }
+        return Promise.resolve(axiosClient.request(config));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      // Handle errors
-      // return Promise.reject(error);
-      return error.response;
     }
-  );
+    // Handle errors
+    // return Promise.reject(error);
+    return error.response;
+  }
+);
 
-  return instance;
-};
+export default axiosClient;
 
-export default useApi;
+// const axiosClient = axios.create({
+//   baseURL: import.meta.env.VITE_SERVER_URL,
+//   headers: {
+//     'content-type': 'application/json'
+//   },
+//   paramsSerializer: (params) => queryString.stringify(params)
+// })
+
+// axiosClient.interceptors.request.use(async (config) => {
+//   const access_token = JSON.parse(localStorage?.getItem('userStore') || '{}')?.state?.access_token
+//   if (access_token) {
+//     config.headers.Authorization = `Bearer ${access_token}`
+//   }
+//   return config
+// })
+// axiosClient.interceptors.response.use(
+//   (response) => {
+//     if (response && response.data) {
+//       return response.data
+//     }
+//     return response
+//   },
+//   (error) => {
+//     console.log(error)
+//     // return error.response.data
+//   }
+// )
+// export default axiosClient

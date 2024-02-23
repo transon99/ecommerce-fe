@@ -1,86 +1,43 @@
-"use client";
+import { getBaseCategoryAction } from '@/action/CategoryAction';
+import { getProductByCategory } from '@/action/ProductAction';
+import { Hero } from '@/components/Hero';
+import ProductReel from '@/components/ProductReel';
+import MaxWidthWrapper from '@/components/ui/MaxWidthWrapper';
 
-import { Hero } from "@/components/Hero";
-import ProductReel from "@/components/ProductReel";
-import MaxWidthWrapper from "@/components/ui/MaxWidthWrapper";
+const heroData: string[] = ['', '', ''];
+interface ProductReel {
+  title: string;
+  href: string;
+  products: Product[] | undefined;
+}
 
-const data: Product[] = [
-  {
-    id: "id1",
-    name: "Product 1",
-    description: "desciption",
-    imageUrls: [
-      "https://kccshop.vn/media/product/75-5547-1.jpg",
-      "https://kccshop.vn/media/product/75-5547-2.jpg",
-      "https://kccshop.vn/media/product/75-5547-3.jpg",
-      "https://kccshop.vn/media/product/75-5547-5.jpg",
-    ],
-    quantity: 10,
-    category: {
-      id: "id1",
-      name: "Category 1",
-      imageUrl: "",
-    },
-    brand: {
-      id: "id1",
-      name: "Brand 1",
-      imageUrl: "",
-    },
-    price: 100,
-    rate: 5,
-  },
-  {
-    id: "id2",
-    name: "Product 1",
-    description: "desciption",
-    imageUrls: ["", "", "", ""],
-    quantity: 10,
-    sku: "PR1",
-    category: {
-      id: "id1",
-      name: "Category 1",
-      imageUrl: "",
-    },
-    brand: {
-      id: "id1",
-      name: "Brand 1",
-      imageUrl: "",
-    },
-    price: 100,
-  },
-  {
-    id: "id1",
-    name: "Product 1",
-    description: "desciption",
-    imageUrls: ["", "", "", ""],
-    quantity: 10,
-    sku: "PR1",
-    category: {
-      id: "id1",
-      name: "Category 1",
-      imageUrl: "",
-    },
-    brand: {
-      id: "id1",
-      name: "Brand 1",
-      imageUrl: "",
-    },
-    price: 100,
-  },
-];
+export default async function Home() {
+  const baseCatListRes = await getBaseCategoryAction();
 
-const heroData: string[] = ["", "", ""];
+  let productReels: ProductReel[] = [];
 
-export default function Home() {
+  baseCatListRes.data.map((category: Category) => {
+    productReels?.push({
+      title: category.name,
+      href: `/${category.id}`,
+      products: category.products,
+    });
+  });
+
+  console.log('productReels', productReels);
+
   return (
     <>
       <MaxWidthWrapper>
-        <Hero urls={heroData} />
-        <ProductReel
-          title="Featured Products"
-          href="/collections/featured"
-          products={data}
-        />
+        {/* <Hero urls={heroData} /> */}
+        {productReels.map((item) => (
+          <ProductReel
+            key={item.title}
+            title={item.title}
+            href={item.href}
+            products={item.products}
+          />
+        ))}
       </MaxWidthWrapper>
     </>
   );

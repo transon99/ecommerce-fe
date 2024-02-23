@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 
 type ProductImageProps = {
   cartProduct: CartProductType;
-  product: Product;
+  product: ProductResponse;
   handleImageSelect: (value: ImageUrl) => void;
 };
 

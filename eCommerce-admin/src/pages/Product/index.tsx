@@ -15,7 +15,6 @@ import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
 const Product = () => {
-  const { handleSubmit, control } = useForm()
   const [categoryId, setCategoryId] = useState<string>('')
   const [page, setPage] = useState(1)
   const [brandId, setBrandId] = useState<string>('')
@@ -117,50 +116,6 @@ const Product = () => {
         </Flex>
         <div className='relative lg:w-[326px]'>
           <Search placeholder='Search Product ...' />
-        </div>
-      </div>
-      <div className='flex flex-col flex-1 p-5 text-primary'>
-        <div className='flex flex-wrap gap-2 mb-4 items-center justify-between'>
-          <Text>
-            Products:{' '}
-            <Text weight={'bold'}>
-              All <Text weight={'light'}>(16)</Text>
-            </Text>
-          </Text>
-        </div>
-        <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
-          <Flex
-            align={'center'}
-            gap={'3'}
-            className=' bg-secondary card !p-5  items-center gap-4 min-w-[218px] rounded-xl'
-          >
-            {categoryId ? (
-              <>
-                <div className='p-1 bg-[#263E7B] rounded-lg w-6 h-6'>
-                  <img src={currentCategory?.iconUrl.thumbnailUrl} alt={currentCategory?.name} />
-                </div>
-                <Text as={'p'} size={'5'} weight={'bold'}>
-                  {currentCategory?.name}
-                </Text>
-              </>
-            ) : null}
-          </Flex>
-          <form
-            className='flex xl:justify-center xl:items-center flex-col xl:flex-row gap-3'
-            onSubmit={handleSubmit((data) => {
-              handleFilter(data)
-            })}
-          >
-            <Controller
-              name='category'
-              control={control}
-              render={({ field }) => <CustomSelect field={field} options={categories} />}
-            />
-
-            <CustomButton className='bg-[#263E7B] !cursor-pointer text-primary hover:bg-green5 focus:shadow-green7 inline-flex h-[35px] items-center justify-center rounded-[4px] px-[15px] font-medium leading-none focus:shadow-[0_0_0_2px] focus:outline-none'>
-              Search
-            </CustomButton>
-          </form>
         </div>
       </div>
       <div>

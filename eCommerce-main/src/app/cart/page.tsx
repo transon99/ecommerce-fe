@@ -1,6 +1,6 @@
-import MaxWidthWrapper from "@/components/ui/MaxWidthWrapper";
-import React from "react";
-import CartClient from "./CartClient";
+import MaxWidthWrapper from '@/components/ui/MaxWidthWrapper';
+import React from 'react';
+import CartClient from './CartClient';
 
 type CartProps = {};
 

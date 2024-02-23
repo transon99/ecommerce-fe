@@ -5,7 +5,7 @@ interface UserInfo {
 
   lastName: string;
 
-  imageUrl: string;
+  imageUrl: string | undefined;
 
   email: string;
 

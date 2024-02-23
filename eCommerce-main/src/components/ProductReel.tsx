@@ -1,19 +1,24 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import React from "react";
-import ProductListing from "./ProductListing";
+import Link from 'next/link';
+import React from 'react';
+import ProductListing from './ProductListing';
 
 interface ProductReelProps {
   title: string;
   subtitle?: string;
   href?: string;
-  products: Product[];
+  products: Product[] | undefined;
   rate: number;
 }
 
-const ProductReel = (props: ProductReelProps) => {
-  const { title, subtitle, href, products } = props;
+const ProductReel = ({
+  title,
+  subtitle,
+  href,
+  products,
+  rate,
+}: ProductReelProps) => {
   return (
     <section className="py-12 z-0">
       <div className="md:flex md:items-center md:justify-between mb-4">
@@ -41,7 +46,7 @@ const ProductReel = (props: ProductReelProps) => {
       <div className="relative">
         <div className="mt-6 flex items-center w-full">
           <div className="w-full grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-4 md:gap-y-10 lg:gap-x-8">
-            {products.map((product, i) => (
+            {products?.map((product, i) => (
               <ProductListing
                 key={`product-${i}`}
                 product={product}

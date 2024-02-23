@@ -1,65 +1,43 @@
-"use client";
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+'use client';
+import { useEffect } from 'react';
 
-import Cookies from "js-cookie";
-// import { toast } from "react-toastify";
-
-import routes from "@/routes";
-import { useRouter } from "next/navigation";
-import { useUser } from "@/store/useUser";
-import authApi from "@/apis/authApi";
+import Cookies from 'js-cookie';
+import userApi from '@/apis/userApi';
+import { useUser } from '@/store/useUser';
 
 const UserLogin = ({ children }: { children: React.ReactNode }) => {
-  const { data: session, status } = useSession();
-  const userId = useUser((state) => state.userId);
+  const { setCurrentUser, isLogined, setIsLogined } = useUser();
+  console.log(isLogined);
 
   useEffect(() => {
-    const login = async () => {
-      try {
-        if (session && session.accessToken) {
-          if (!userId) {
-            const result = await authApi.(session.id_token);
-            console.log("🚀 ~ file: index.jsx:31 ~ login ~ result:", result);
+    console.log('==================');
+    const isLoginedCookies = Cookies.get('isLogined');
+    console.log('isLoginedCookies', isLoginedCookies);
+    if (isLoginedCookies !== undefined) {
+      const isLoginedCookiesParse = JSON.parse(isLoginedCookies);
+      console.log('isLoginedCookiesParse', isLoginedCookiesParse);
+      setIsLogined(isLoginedCookiesParse);
+    }
+  }, []);
 
-            if ("password" in result && !result.password) {
-              Cookies.set("accessToken", result.accessToken, {
-                expires: 100,
-              });
-              Cookies.set("refreshToken", result.refreshToken, {
-                expires: 100,
-              });
-              setShowModal(true);
-              return;
-            }
-            if ("public" in result && !result.public) {
-              dispatch(setEmailRecover(session.user.email));
-              return;
-            }
-            dispatch(setUser(result));
-            toast.success("Login successfully.");
+  useEffect(() => {
+    const handAuth = async () => {
+      const response = await userApi.getCurrentUser();
+      if (response.status !== 401) {
+        Cookies.set('userInfo', JSON.stringify(response.data));
+        const userInfoCookie = Cookies.get('userInfo');
 
-            Cookies.set("accessToken", result.accessToken, {
-              expires: 100,
-            });
-            Cookies.set("refreshToken", result.refreshToken, {
-              expires: 100,
-            });
-          }
+        if (userInfoCookie !== undefined) {
+          const userInfo = JSON.parse(userInfoCookie);
+          console.log('userInfo: ', userInfo);
+          setCurrentUser(userInfo);
+        } else {
+          console.error('userInfo cookie is undefined');
         }
-        const accessToken = Cookies.get("accessToken");
-        if (!accessToken) {
-          dispatch(resetUser());
-        }
-      } catch (error) {
-        console.log("🚀 ~ file: index.jsx:65 ~ login ~ error:", error);
-        toast.error("Login error. Please try again later.");
-        // signOut();
-        dispatch(resetUser());
       }
     };
-    login();
-  }, [session]);
+    handAuth();
+  }, [isLogined]);
 
   return <>{children}</>;
 };

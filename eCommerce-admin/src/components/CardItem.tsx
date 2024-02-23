@@ -2,6 +2,8 @@ import { Button, Card, Flex, Heading, Text } from '@radix-ui/themes'
 import { Link } from 'react-router-dom'
 import { AddProductDialog } from './Dialog'
 import EditProductDialog from './Dialog/EditDialog/EditProductDialog'
+import productApi from '@/apis/productApi'
+import { SUCCESS_STATUS } from '@/constant/commonConstant'
 
 interface CardItem {
   product: Product
@@ -11,6 +13,14 @@ interface CardItem {
 
 const CardItem = ({ product, brandOptions, categoryOptions }: CardItem) => {
   console.log('product =====>', product)
+
+  const handleDelete = async (id: string | undefined) => {
+    const response = await productApi.delete(id)
+    if (response.status === SUCCESS_STATUS) {
+      window.location.reload()
+    }
+  }
+
   const salePrice = (1 - (product?.discount ?? 0) / 100) * (product?.price ?? 0)
   return (
     <div className='bg-secondary' key={product.id}>
@@ -38,9 +48,6 @@ const CardItem = ({ product, brandOptions, categoryOptions }: CardItem) => {
             <Text as='p' size='3' weight={'medium'} className='text-[#00BA9D] leading-[1.4]'>
               {`Available : ${product.quantity}`}
             </Text>
-            {/* <Text as='p' size='3' weight={'medium'} className='text-[#4F89FC] leading-[1.4]'>
-              Already sold : 158
-            </Text> */}
             <Text as='p' size='3' weight={'medium'} className='text-[#4F89FC] leading-[1.4]'>
               {`Discount : ${product.discount}%`}
             </Text>
@@ -60,6 +67,7 @@ const CardItem = ({ product, brandOptions, categoryOptions }: CardItem) => {
             color='red'
             radius='full'
             className='hover:cursor-pointer hover:bg-[#FF5470] hover:text-white col'
+            onClick={() => handleDelete(product.id)}
           >
             Delete
           </Button>

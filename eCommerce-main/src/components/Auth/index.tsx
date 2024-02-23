@@ -1,20 +1,24 @@
-"use client";
-import { SessionProvider } from "next-auth/react";
-import "react-toastify/dist/ReactToastify.css";
-import { ThemeProvider } from "@/components/ThemeProvider";
-import { Header } from "../Header";
-import { ToastContainer } from "react-toastify";
-import Footer from "../Footer";
+'use client';
+
+import { ThemeProvider } from '@/components/ThemeProvider';
+import { SessionProvider } from 'next-auth/react';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Footer from '../Footer';
+import { Header } from '../Header';
+import UserLogin from './UserLogin';
 
 const Auth = ({ children }: { children: React.ReactNode }) => {
   return (
     <SessionProvider>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <ToastContainer position="bottom-right" />
-        <Header />
-        {children}
-        <Footer />
-      </ThemeProvider>
+      <UserLogin>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ToastContainer position="bottom-right" />
+          <Header />
+          {children}
+          <Footer />
+        </ThemeProvider>
+      </UserLogin>
     </SessionProvider>
   );
 };

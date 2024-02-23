@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Menu, Moon, ShoppingCart, Sun } from 'lucide-react';
+import { Menu, Moon, Sun } from 'lucide-react';
+import Cookies from 'js-cookie';
 
 import MaxWidthWrapper from '../ui/MaxWidthWrapper';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
@@ -10,14 +11,51 @@ import Link from 'next/link';
 import { Button, buttonVariants } from '../ui/button';
 import ProfileButton from '../ProfileButton';
 import { Separator } from '../ui/separator';
-// import Cart from "../Cart";
 import { useUser } from '@/store/useUser';
 import Navbar from './Navbar';
-import { NavHead } from './NavHead';
+import Cart from '../Cart';
+import categoryApi from '@/apis/categoryApi';
+import { useCategory } from '@/store/useCategory';
+import { useCart } from '@/store/useCart';
+
+export interface Navigation {
+  href: string;
+  label: string;
+  icon: string;
+}
 
 export const Header = () => {
   const { theme, setTheme } = useTheme();
   const [isClient, setIsClient] = useState<boolean>(false);
+  const { setbaseCategoryInfo, baseCategoryInfo } = useCategory();
+  const { userInfo, isLogined } = useUser();
+  const { cartProducts, setQty } = useCart();
+
+  useEffect(() => {
+    setQty(cartProducts.length);
+  }, [cartProducts]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await categoryApi.getBaseCategories();
+        setbaseCategoryInfo(response.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  let categories: Navigation[] = [];
+
+  baseCategoryInfo?.map((category) =>
+    categories.push({
+      href: category.name.toLocaleLowerCase(),
+      label: category.name,
+      icon: category.iconUrl.thumbnailUrl,
+    })
+  );
 
   const { getCurrentUser } = useUser();
 
@@ -29,25 +67,12 @@ export const Header = () => {
     setIsClient(true);
   }, []);
 
-  const routes = [
-    {
-      href: '/',
-      label: 'Products',
-    },
-    {
-      href: '/',
-      label: 'Categories',
-    },
-    {
-      href: '/',
-      label: 'On Sale',
-    },
-  ];
+  console.log('userInfo: ===========> ', userInfo);
 
   return (
     <>
-      <NavHead />
-      <div className="sticky z-50 top-0 inset-x-0 bg-white dark:bg-[#020817]">
+      {/* <NavHead /> */}
+      <div className="sticky z-50 top-0 inset-x-0 bg-slate-200 dark:bg-[#020817]">
         <MaxWidthWrapper>
           <div className="relative  flex h-16 items-center justify-between w-full">
             <div className="flex items-center">
@@ -57,13 +82,13 @@ export const Header = () => {
                 </SheetTrigger>
                 <SheetContent side="left" className="w-[300px] sm:w-[400px]">
                   <nav className="flex flex-col gap-4">
-                    {routes.map((route, i) => (
+                    {categories?.map((category, i) => (
                       <Link
                         key={i}
-                        href={route.href}
-                        className="block px-2 py-1 text-lg"
+                        href={category.href}
+                        className="block px-2 py-1 text-lg font-bold"
                       >
-                        {route.label}
+                        {category.label}
                       </Link>
                     ))}
                   </nav>
@@ -89,16 +114,47 @@ export const Header = () => {
                 className=" hover:bg-slate-200 rounded-full p-1"
                 aria-label="Shopping Cart"
               >
-                {/* {isClient && <Cart />} */}
+                {isClient && <Cart />}
                 <span className="sr-only">Shopping Cart</span>
+              </div>
+              <div className="hidden md:flex h-full justify-center items-center">
+                {isLogined && userInfo ? null : (
+                  <Link
+                    href="/login"
+                    className={buttonVariants({ variant: 'ghost' })}
+                  >
+                    Sign in
+                  </Link>
+                )}
+                {isLogined && userInfo ? null : (
+                  <Separator
+                    orientation="vertical"
+                    className="h-[24px] w-[1px] bg-slate-700"
+                  />
+                )}
+
+                {isLogined && userInfo ? (
+                  <ProfileButton imageUrl={userInfo?.imageUrl} />
+                ) : (
+                  <Link
+                    href="/register"
+                    className={buttonVariants({
+                      variant: 'ghost',
+                    })}
+                  >
+                    Create account
+                  </Link>
+                )}
               </div>
             </div>
           </div>
         </MaxWidthWrapper>
         <Separator />
 
-        <Navbar />
-        <Separator />
+        <div className=" hidden lg:block">
+          <Navbar categories={categories} />
+          <Separator />
+        </div>
       </div>
     </>
   );

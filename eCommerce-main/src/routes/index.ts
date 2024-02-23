@@ -1,8 +1,8 @@
 const routes = {
-  home: "/",
-  // search: '/search',
-  // products: '/products',
-  // sellers: '/sellers',
+  home: '/',
+  manage_order: '/manage-order',
+  order: '/manage-order',
+  sellers: '/sellers',
 
   // login: '/login',
   // forgetPassword: '/login/forget-password',

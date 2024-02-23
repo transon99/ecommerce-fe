@@ -1,8 +1,8 @@
-import { CartProductType } from "@/app/product/[productId]/ProductDetail";
-import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
-import { toast } from "react-toastify";
-import { useEffect } from "react";
+import { CartProductType } from '@/app/product/[productId]/ProductDetail';
+import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
+import { toast } from 'react-toastify';
+import { useEffect } from 'react';
 
 export type CartItem = {
   product: Product;
@@ -19,7 +19,8 @@ type CartState = {
   clearCart: () => void;
   handleChangeCart: (updateCart: CartProductType[]) => void;
   getTotals: () => void;
-  setTotalAndQty: (total: number, qty: number) => void;
+  setTotal: (total: number) => void;
+  setQty: (qty: number) => void;
 };
 
 export const useCart = create<CartState>()(
@@ -35,19 +36,19 @@ export const useCart = create<CartState>()(
         }),
       addItem: (product: CartProductType) =>
         set((state) => {
-          toast.success("Product added to cart");
+          toast.success('Product added to cart');
           return { cartProducts: [...state.cartProducts, product] };
         }),
       removeItem: (id) =>
         set((state) => {
-          toast.success("Remove product from cart");
+          toast.success('Remove product from cart');
           return {
             cartProducts: state.cartProducts.filter((item) => item.id !== id),
           };
         }),
       clearCart: () =>
         set(() => {
-          toast.success("Clear cart successfully");
+          toast.success('Clear cart successfully');
 
           return { cartProducts: [] };
         }),
@@ -80,14 +81,19 @@ export const useCart = create<CartState>()(
           }, [state.cartProducts]);
           return { totalPrice: 0, cartQty: 0 };
         }),
-      setTotalAndQty: (total: number, qty: number) => {
+      setTotal: (total: number) => {
         set(() => {
-          return { totalPrice: total, cartQty: qty };
+          return { totalPrice: total };
+        });
+      },
+      setQty: (qty: number) => {
+        set(() => {
+          return { cartQty: qty };
         });
       },
     }),
     {
-      name: "cart-storage",
+      name: 'cart-storage',
       storage: createJSONStorage(() => localStorage),
     }
   )

@@ -1,14 +1,19 @@
-"use client";
+'use client';
 
-import Heading from "@/components/Heading";
-import { useState } from "react";
+import Heading from '@/components/Heading';
+import { useState } from 'react';
+import Swal from 'sweetalert2';
 
-import { useForm } from "react-hook-form";
+import { FieldValues, useForm } from 'react-hook-form';
 
-import { Button } from "@/components/ui/button";
-import { rules } from "@/utils/rules";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Button } from '@/components/ui/button';
+import { rules } from '@/utils/rules';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import Input from '@/components/Input/Input';
+import authApi from '@/apis/authApi';
+import { toast } from 'react-toastify';
+import { CgSpinner } from 'react-icons/cg';
 
 type RegisterFormProps = {};
 
@@ -21,98 +26,93 @@ const RegisterForm = (props: RegisterFormProps) => {
     handleSubmit,
     getValues,
     formState: { errors },
-  } = useForm<RegisterResquest>();
+  } = useForm<FieldValues>({
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      confirm_password: '',
+    },
+  });
 
-  const onSubmit = handleSubmit((data) => console.log(data));
+  const handleRegister = async (data: any) => {
+    setIsLoading(true);
+    const response = await authApi.register(data);
+    if (response.status === 'OK') {
+      Swal.fire({
+        title: 'Congratulations !',
+        text: 'Register succerssfull, Please check your email',
+        icon: 'success',
+        showCloseButton: true,
+        confirmButtonText: 'Close',
+      }).then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          router.push('/login');
+        }
+      });
+    } else {
+      toast.error(response.message);
+    }
+  };
   return (
     <>
       <Heading title="Sign up for E-Shop" center />
       <hr className="bg-slate-300 w-full h-px" />
-      <form className="space-y-4 md:space-y-6" onSubmit={onSubmit} noValidate>
+      <form
+        className="space-y-4 md:space-y-6"
+        onSubmit={handleSubmit((data) => handleRegister(data))}
+        noValidate
+      >
         <div className="flex gap-4">
           <div className="w-full">
-            <label
-              htmlFor="firstName"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              First Name
-            </label>
-            <input
-              type="text"
+            <Input
               id="firstName"
-              className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              register={register}
+              type="text"
               placeholder="First Name"
-              {...register("firstName", {
-                required: {
-                  value: true,
-                  message: "First Name is required",
-                },
-              })}
+              lable="First Name"
+              errorMessage={errors.firstName?.message?.toString()}
+              rules={rules.firsName}
+              disabled={isLoading}
             />
-            <div className="mt-1 text-red-600 min-h-[1rem] text-sm">
-              {errors.firstName?.message}
-            </div>
           </div>
           <div className="w-full">
-            <label
-              htmlFor="lastName"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Last Name
-            </label>
-            <input
-              type="text"
+            <Input
               id="lastName"
+              register={register}
+              type="text"
               placeholder="Last Name"
-              className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              {...register("lastName", {
-                required: {
-                  value: true,
-                  message: "Last Name is required",
-                },
-              })}
+              lable="Last Name"
+              errorMessage={errors.lastName?.message?.toString()}
+              rules={rules.lastName}
+              disabled={isLoading}
             />
-            <div className="mt-1 text-red-600 min-h-[1rem] text-sm">
-              {errors.lastName?.message}
-            </div>
           </div>
         </div>
         <div>
-          <label
-            htmlFor="email"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
-            Your email
-          </label>
-          <input
-            type="email"
+          <Input
             id="email"
-            className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder="name@company.com"
-            {...register("email", rules.email)}
+            register={register}
+            type="email"
+            placeholder="Enter your email..."
+            lable="Your email"
+            errorMessage={errors.email?.message?.toString()}
+            rules={rules.email}
+            disabled={isLoading}
           />
-          <div className="mt-1 text-red-600 min-h-[1rem] text-sm">
-            {errors.email?.message}
-          </div>
         </div>
         <div>
-          <label
-            htmlFor="password"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
-            Password
-          </label>
-          <input
-            type="password"
-            autoComplete="on"
+          <Input
             id="password"
+            register={register}
+            type="password"
             placeholder="••••••••"
-            className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            {...register("password", rules.password)}
+            lable="Password"
+            errorMessage={errors.password?.message?.toString()}
+            rules={rules.password}
+            disabled={isLoading}
           />
-          <div className="mt-1 text-red-600 min-h-[1rem] text-sm">
-            {errors.password?.message}
-          </div>
         </div>
         <div>
           <label
@@ -127,10 +127,10 @@ const RegisterForm = (props: RegisterFormProps) => {
             id="confirm_password"
             placeholder="••••••••"
             className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            {...register("confirmPassword", {
+            {...register('confirmPassword', {
               ...rules.confirm_password,
               validate: (value) =>
-                value === getValues("password") || "confirm password not match",
+                value === getValues('password') || 'confirm password not match',
             })}
           />
           <div className="mt-1 text-red-600 min-h-[1rem] text-sm">
@@ -152,7 +152,7 @@ const RegisterForm = (props: RegisterFormProps) => {
               htmlFor="terms"
               className="font-light text-gray-500 dark:text-gray-300"
             >
-              I accept the{" "}
+              I accept the{' '}
               <a
                 className="font-medium text-primary-600 hover:underline dark:text-primary-500"
                 href="#"
@@ -166,10 +166,15 @@ const RegisterForm = (props: RegisterFormProps) => {
           type="submit"
           className="w-full focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
         >
+          {isLoading && (
+            <span className="animate-spin">
+              <CgSpinner />
+            </span>
+          )}
           Create an account
         </Button>
         <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-          Already have an account?{" "}
+          Already have an account?{' '}
           <Link
             href="login"
             className="font-medium text-primary-600 hover:underline dark:text-primary-500"

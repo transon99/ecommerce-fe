@@ -1,12 +1,10 @@
-import useApi from "@/axios/apiConfig";
-import { API_URL_USER } from "@/constant/apiConstant";
+import axiosClient from '@/axios/apiConfig';
+import { API_URL_USER } from '@/constant/apiConstant';
 
-const axiosClient = useApi();
-
+const url = API_URL_USER;
 const userApi = {
   getCurrentUser: () => {
-    const url = `${API_URL_USER}/current`;
-    return axiosClient.get(url);
+    return axiosClient.get(`${url}/current`);
   },
   // loginWithFacebook: (data: SocialLoginResquest) => {
   //   const url = `${API_URL_USER}/login/facebook`;
