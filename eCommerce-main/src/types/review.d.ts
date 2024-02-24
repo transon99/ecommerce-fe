@@ -11,3 +11,13 @@ interface Review {
 
   createDate: Date;
 }
+
+interface ReviewRequest {
+  rate: number | undefined;
+
+  content: string | undefined;
+
+  userId: string | undefined;
+
+  productId: string | undefined;
+}
