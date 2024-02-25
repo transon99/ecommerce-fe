@@ -1,24 +1,17 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import React from 'react';
-import ProductListing from './ProductListing';
+import Link from "next/link";
+import React from "react";
+import ProductListing from "./ProductListing";
 
 interface ProductReelProps {
   title: string;
   subtitle?: string;
   href?: string;
   products: Product[] | undefined;
-  rate: number;
 }
 
-const ProductReel = ({
-  title,
-  subtitle,
-  href,
-  products,
-  rate,
-}: ProductReelProps) => {
+const ProductReel = ({ title, subtitle, href, products }: ProductReelProps) => {
   return (
     <section className="py-12 z-0">
       <div className="md:flex md:items-center md:justify-between mb-4">

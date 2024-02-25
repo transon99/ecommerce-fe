@@ -42,7 +42,7 @@ const AddRating = ({ product }: AddRatingProps) => {
     });
   };
 
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     setIsLoading(true);
     if (data.rating === 0) {
       setIsLoading(false);
@@ -56,7 +56,7 @@ const AddRating = ({ product }: AddRatingProps) => {
     };
 
     try {
-      const res = reviewApi.createReview(ratingData);
+      const res = await reviewApi.createReview(ratingData);
       if (res.data.status === SUCCESS_STATUS) {
         toast.success("Rating submitted");
         router.refresh;

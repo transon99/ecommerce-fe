@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { IoMdStar } from 'react-icons/io';
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { IoMdStar } from "react-icons/io";
 
-import { cn } from '@/lib/utils';
-import ImageSlider from './ImageSlider';
-import { Skeleton } from './ui/skeleton';
-import { formatPrice } from '@/lib/formatPrice';
-import { convertRate } from '@/utils/convertRate';
+import { cn } from "@/lib/utils";
+import ImageSlider from "./ImageSlider";
+import { Skeleton } from "./ui/skeleton";
+import { formatPrice } from "@/lib/formatPrice";
+import { convertRate } from "@/utils/convertRate";
 interface ProductListingProps {
-  product: Product | null;
+  product: ProductResponse | null;
   index: number;
 }
 
@@ -28,13 +28,13 @@ const ProductListing = ({ product, index }: ProductListingProps) => {
   if (isVisible && product) {
     return (
       <Link
-        className={cn('invisible h-full w-full cursor-pointer group/main', {
-          'visible animate-in fade-in-5': isVisible,
+        className={cn("invisible h-full w-full cursor-pointer group/main", {
+          "visible animate-in fade-in-5": isVisible,
         })}
         href={`/product/${product.id}`}
       >
         <div className="flex flex-col w-full ">
-          <ImageSlider urls={product.thumbnailUrls} />
+          <ImageSlider urls={product.imageUrls} />
           <div className="flex justify-between">
             <div className="flex flex-col w-full">
               <div className="flex justify-between mt-4">
@@ -47,7 +47,7 @@ const ProductListing = ({ product, index }: ProductListingProps) => {
                 </div>
               </div>
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                {product?.category?.name}
+                {product?.categoryDTO?.name}
               </p>
               <p className="mt-1 font-medium text-sm text-gray-900 dark:text-gray-50">
                 {formatPrice(product.price)}

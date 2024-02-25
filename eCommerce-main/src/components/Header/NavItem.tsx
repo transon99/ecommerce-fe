@@ -1,15 +1,10 @@
-'use client';
+"use client";
 
-import { ChevronDown } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Button } from '../ui/button';
-import { Navigation } from '.';
-import { useCallback, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import routes from '@/routes';
-import queryString from 'query-string';
+import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback } from "react";
+import { Navigation } from ".";
+import Link from "next/link";
 
 interface NavItemProps {
   category: Navigation;
@@ -19,13 +14,11 @@ interface NavItemProps {
 const NavItem = ({ category, selected }: NavItemProps) => {
   const router = useRouter();
   const params = useSearchParams();
-  const handleClick = useCallback(() => {
-    if (category.label === 'All') {
-      router.push(routes.home);
-    } else {
-      router.push(category.href);
-    }
-  }, [category.label, params, router]);
+  // const handleClick = useCallback(() => {
+  //   router.push({
+  //     pathname:
+  //   });
+  // }, [category.label, params, router]);
   return (
     // <div className="flex">
     //   <div className="relative flex items-center">
@@ -98,17 +91,20 @@ const NavItem = ({ category, selected }: NavItemProps) => {
     //     </div>
     //   ) : null}
     // </div>
-    <div
-      onClick={handleClick}
+    <Link
+      href={{
+        pathname: `category/${category.name}`,
+        query: { id: category.href },
+      }}
       className={`flex items-center justify-center text-center gap-1 p-2 border-b-2 hover:text-slate-800 cursor-pointer ${
         selected
-          ? 'border-b-slate-800 text:slate-800'
-          : 'border-transparent text-slate-500'
+          ? "border-b-slate-800 text:slate-800"
+          : "border-transparent text-slate-500"
       }`}
     >
       <Image src={category.icon} alt={category.label} width={20} height={20} />
       <div className="font-medium text-sm">{category.label}</div>
-    </div>
+    </Link>
   );
 };
 
