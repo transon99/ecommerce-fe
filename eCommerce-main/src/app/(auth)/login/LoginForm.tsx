@@ -20,6 +20,8 @@ import { AiOutlineFacebook } from 'react-icons/ai';
 type LoginFormProps = {};
 
 const LoginForm = (props: LoginFormProps) => {
+  console.log('id', process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_ID);
+  console.log('secret', process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_SECRET);
   const [isLoading, setIsLoading] = useState(false);
   const { setIsLogined } = useUser();
   const router = useRouter();
@@ -52,7 +54,7 @@ const LoginForm = (props: LoginFormProps) => {
 
   const handleLoginWithFacebook = async (data: any) => {
     setIsLoading(true);
-    signIn('google', { callbackUrl: routes.home });
+    await signIn('facebook', { callbackUrl: routes.home });
     setIsLoading(false);
     // if (response.data.status === 'OK') {
     //   Cookies.set('accessToken', response.data.accessToken, { expires: 100 });

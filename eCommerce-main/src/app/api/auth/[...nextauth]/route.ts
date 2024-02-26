@@ -8,10 +8,10 @@ const handler = NextAuth({
       clientId: process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_ID as string,
       clientSecret: process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_SECRET as string,
     }),
-    // GoogleProvider({
-    //   clientId: process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_ID as string,
-    //   clientSecret: process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_SECRET as string,
-    // }),
+    GoogleProvider({
+      clientId: process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_ID as string,
+      clientSecret: process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_SECRET as string,
+    }),
   ],
   callbacks: {
     async jwt({ token, user, account }) {

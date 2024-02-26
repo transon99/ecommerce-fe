@@ -21,15 +21,14 @@ function SignIn() {
   const { register, handleSubmit } = useForm<LoginForm>()
 
   const handleLogin = async (data: LoginForm) => {
-    console.log(data)
     setIsLoading(true)
     const response = await authApi.login(data)
-    console.log(response)
+    console.log(response.data)
     setIsLoading(false)
     if (response.data.status === 'OK') {
       setAccessToken(response.data.accessToken)
       setRefreshToken(response.data.refreshToken)
-      navigate('/')
+      // navigate('/')
     } else {
       console.log('error', response.message)
       toast.error(response.message)

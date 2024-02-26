@@ -107,7 +107,7 @@ const ItemContent = ({ item }: ItemContentProps) => {
         <Link href={`/product/${item.id}`}>
           <div className="relative w-[70px] aspect-square">
             <Image
-              src={item.selectedImg.thumbnailUrl}
+              src={item.selectedImg.imageUrl}
               alt={item.name}
               fill
               className="object-contain"
