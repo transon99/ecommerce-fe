@@ -4,18 +4,37 @@ import { useEffect } from 'react';
 import Cookies from 'js-cookie';
 import userApi from '@/apis/userApi';
 import { useUser } from '@/store/useUser';
+import { useCategory } from '@/store/useCategory';
+import categoryApi from '@/apis/categoryApi';
 
 const UserLogin = ({ children }: { children: React.ReactNode }) => {
   const { setCurrentUser, isLogined, setIsLogined } = useUser();
-  console.log(isLogined);
+  const { setbaseCategoryInfo } = useCategory();
 
   useEffect(() => {
-    console.log('==================');
+    const fetchData = async () => {
+      try {
+        const response = await categoryApi.getBaseCategories();
+        setbaseCategoryInfo(response.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
     const isLoginedCookies = Cookies.get('isLogined');
-    console.log('isLoginedCookies', isLoginedCookies);
     if (isLoginedCookies !== undefined) {
       const isLoginedCookiesParse = JSON.parse(isLoginedCookies);
-      console.log('isLoginedCookiesParse', isLoginedCookiesParse);
+      setIsLogined(isLoginedCookiesParse);
+    }
+  }, []);
+
+  useEffect(() => {
+    const isLoginedCookies = Cookies.get('isLogined');
+    if (isLoginedCookies !== undefined) {
+      const isLoginedCookiesParse = JSON.parse(isLoginedCookies);
       setIsLogined(isLoginedCookiesParse);
     }
   }, []);
@@ -29,7 +48,6 @@ const UserLogin = ({ children }: { children: React.ReactNode }) => {
 
         if (userInfoCookie !== undefined) {
           const userInfo = JSON.parse(userInfoCookie);
-          console.log('userInfo: ', userInfo);
           setCurrentUser(userInfo);
         } else {
           console.error('userInfo cookie is undefined');

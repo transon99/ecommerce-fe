@@ -4,7 +4,7 @@ interface Product {
   description: string | undefined;
   category: Category;
   brand: Brand;
-  thumbnailUrls: ImageUrl[];
+  imageUrls: ImageUrl[];
   price: number;
   salePrice: number;
   quantity: number;
@@ -13,7 +13,7 @@ interface Product {
 
 interface ImageUrl {
   id: string;
-  thumbnailUrl: string;
+  imageUrl: string;
 }
 
 interface ProductResponse {

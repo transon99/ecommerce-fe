@@ -3,11 +3,11 @@ interface Category {
   name: string;
   imageUrls: Image[];
   iconUrl: Image;
-  products?: Product[];
+  products?: ProductResponse[];
   children?: Category[];
 }
 
 interface Image {
   id: string;
-  thumbnailUrl: string;
+  imageUrl: string;
 }

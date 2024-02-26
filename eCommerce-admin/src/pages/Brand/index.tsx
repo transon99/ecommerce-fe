@@ -18,7 +18,7 @@ const columns: GridColDef[] = [
       return (
         <div className='w-16 h-9 rounded-lg overflow-hidden'>
           {param.row.imageUrls.map((imageUrl: any) => (
-            <img key={imageUrl.id} src={imageUrl.thumbnailUrl} />
+            <img key={imageUrl.id} src={imageUrl.imageUrl} />
           ))}
         </div>
       )

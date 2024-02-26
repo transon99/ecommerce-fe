@@ -1,14 +1,11 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import NavItem from './NavItem';
-import { useOnClickOutside } from '@/hooks/use-click-outside';
-import categoryApi from '@/apis/categoryApi';
-import { Navigation } from '.';
-import MaxWidthWrapper from '../ui/MaxWidthWrapper';
 import { usePathname, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import { Navigation } from '.';
+import NavItem from './NavItem';
 interface NavbarItemProps {
-  categories: Navigation[];
+  categories: Navigation[] | undefined;
 }
 
 const NavItems = ({ categories }: NavbarItemProps) => {
@@ -24,15 +21,8 @@ const NavItems = ({ categories }: NavbarItemProps) => {
 
   return (
     <div className="pt-4 flex flex-row items-center justify-between overflow-x-auto">
-      {categories.map((item) => (
-        <NavItem
-          category={item}
-          selected={
-            category === item.label ||
-            (category === null && item.label === 'All')
-          }
-          key={item.label}
-        />
+      {categories?.map((item) => (
+        <NavItem category={item} key={item.label} />
       ))}
     </div>
   );

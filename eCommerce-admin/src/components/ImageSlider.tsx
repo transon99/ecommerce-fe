@@ -89,7 +89,7 @@ const ImageSlider = ({ urls }: ImageSliderProps) => {
               fill
               loading="eager"
               className="-z-10 h-full w-full object-cover object-center"
-              src={url.imageUrl}
+              src={url.thumbnailUrl}
               alt="Product image"
             />
           </SwiperSlide>

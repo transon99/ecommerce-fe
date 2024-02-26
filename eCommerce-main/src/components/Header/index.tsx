@@ -1,23 +1,23 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState } from "react";
-import { Menu, Moon, Sun } from "lucide-react";
-import Cookies from "js-cookie";
+import React, { useEffect, useState } from 'react';
+import { Menu, Moon, Sun } from 'lucide-react';
+import Cookies from 'js-cookie';
 
-import MaxWidthWrapper from "../ui/MaxWidthWrapper";
-import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import { useTheme } from "next-themes";
-import Link from "next/link";
-import { Button, buttonVariants } from "../ui/button";
-import ProfileButton from "../ProfileButton";
-import { Separator } from "../ui/separator";
-import { useUser } from "@/store/useUser";
-import Navbar from "./Navbar";
-import Cart from "../Cart";
-import categoryApi from "@/apis/categoryApi";
-import { useCategory } from "@/store/useCategory";
-import { useCart } from "@/store/useCart";
-import SearchInput from "../Input/SearchInput";
+import MaxWidthWrapper from '../ui/MaxWidthWrapper';
+import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
+import { useTheme } from 'next-themes';
+import Link from 'next/link';
+import { Button, buttonVariants } from '../ui/button';
+import ProfileButton from '../ProfileButton';
+import { Separator } from '../ui/separator';
+import { useUser } from '@/store/useUser';
+import Navbar from './Navbar';
+import Cart from '../Cart';
+import categoryApi from '@/apis/categoryApi';
+import { useCategory } from '@/store/useCategory';
+import { useCart } from '@/store/useCart';
+import SearchInput from '../Input/SearchInput';
 
 export interface Navigation {
   href: string;
@@ -29,7 +29,7 @@ export interface Navigation {
 export const Header = () => {
   const { theme, setTheme } = useTheme();
   const [isClient, setIsClient] = useState<boolean>(false);
-  const { setbaseCategoryInfo, baseCategoryInfo } = useCategory();
+  const { baseCategoryInfo } = useCategory();
   const { userInfo, isLogined } = useUser();
   const { cartProducts, setQty } = useCart();
 
@@ -37,27 +37,15 @@ export const Header = () => {
     setQty(cartProducts.length);
   }, [cartProducts]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await categoryApi.getBaseCategories();
-        setbaseCategoryInfo(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, []);
-
-  let categories: Navigation[] = [];
-
-  baseCategoryInfo?.map((category) =>
-    categories.push({
-      href: category.id,
-      label: category.name,
-      icon: category.iconUrl.thumbnailUrl,
-      name: category.name,
-    })
+  const categories: Navigation[] | undefined = baseCategoryInfo?.map(
+    (category) => {
+      return {
+        href: category.id,
+        label: category.name,
+        icon: category.iconUrl.imageUrl,
+        name: category.name,
+      };
+    }
   );
 
   const { getCurrentUser } = useUser();
@@ -69,8 +57,6 @@ export const Header = () => {
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-  console.log("userInfo: ===========> ", userInfo);
 
   return (
     <>
@@ -109,7 +95,7 @@ export const Header = () => {
                 variant="ghost"
                 size="icon"
                 aria-label="Toggle Theme"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               >
                 <Sun className="h-6 w-6 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
                 <Moon className="absolute h-6 w-6 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
@@ -126,7 +112,7 @@ export const Header = () => {
                 {isLogined && userInfo ? null : (
                   <Link
                     href="/login"
-                    className={buttonVariants({ variant: "ghost" })}
+                    className={buttonVariants({ variant: 'ghost' })}
                   >
                     Sign in
                   </Link>
@@ -144,7 +130,7 @@ export const Header = () => {
                   <Link
                     href="/register"
                     className={buttonVariants({
-                      variant: "ghost",
+                      variant: 'ghost',
                     })}
                   >
                     Create account

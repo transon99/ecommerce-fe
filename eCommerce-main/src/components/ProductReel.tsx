@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import React from "react";
-import ProductListing from "./ProductListing";
+import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
+import ProductListing from './ProductListing';
 
 interface ProductReelProps {
   title: string;
   subtitle?: string;
   href?: string;
-  products: Product[] | undefined;
+  products: ProductResponse[] | undefined;
 }
 
 const ProductReel = ({ title, subtitle, href, products }: ProductReelProps) => {
@@ -31,7 +31,7 @@ const ProductReel = ({ title, subtitle, href, products }: ProductReelProps) => {
             href={href}
             className="hidden text-sm font-medium text-blue-600 hover:text-blue-500 md:block"
           >
-            Shop the collection <span aria-hidden="true">&rarr;</span>
+            Show all <span aria-hidden="true">&rarr;</span>
           </Link>
         ) : null}
       </div>

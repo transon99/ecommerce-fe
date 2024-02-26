@@ -32,18 +32,20 @@ axiosClient.interceptors.response.use(
     const { response, config } = error;
     const status = response?.status;
     if (
-      status === 403 &&
+      status === 401 &&
       Cookies.get('refreshToken') &&
-      response.data.message === 'Invalid token'
+      response.data.message ===
+        'The access token provided is expired, revoked, malformed, or invalid for other reasons.'
     ) {
       const refreshTokenLocal = Cookies.get('refreshToken');
-
       try {
         const { accessToken, refreshToken } = (
-          await axiosClient.post(`/refreshToken`, {
+          await axiosClient.post(`api/v1/auth-service/auth/refresh-token`, {
             refreshToken: refreshTokenLocal,
           })
         ).data;
+
+        console.log('res', accessToken);
 
         Cookies.set('accessToken', accessToken, { expires: 100 });
         Cookies.set('refreshToken', refreshToken, { expires: 100 });

@@ -16,7 +16,7 @@ const columns: GridColDef[] = [
     width: 420,
     renderCell: (param) => {
       return (
-        <div className='w-16 h-9 rounded-lg overflow-hidden'>
+        <div className='w-full rounded-md overflow-hidden'>
           <img key={param.row.imageUrl} src={param.row.imageUrl} />
         </div>
       )

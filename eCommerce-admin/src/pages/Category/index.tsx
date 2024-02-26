@@ -25,7 +25,7 @@ const columns: GridColDef[] = [
     renderCell: (param) => {
       return (
         <div className='w-10 h-10 rounded-lg object-cover'>
-          {param.row.imageUrls?.map((imageUrl: any) => <img key={imageUrl.id} src={imageUrl.thumbnailUrl} />)}
+          {param.row.imageUrls?.map((imageUrl: any) => <img key={imageUrl.id} src={imageUrl.imageUrl} />)}
         </div>
       )
     }
@@ -37,7 +37,7 @@ const columns: GridColDef[] = [
     renderCell: (param) => {
       return (
         <div className='w-10 h-10 rounded-lg overflow-hidden'>
-          <img key={param.row.iconUrl?.id} src={param.row.iconUrl?.thumbnailUrl} />
+          <img key={param.row.iconUrl?.id} src={param.row.iconUrl?.imageUrl} />
         </div>
       )
     }

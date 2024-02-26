@@ -1,37 +1,67 @@
 import orderApi from '@/apis/orderApi'
 import { CardOrder } from '@/components'
+import ActionBtn from '@/components/ActionBtn'
 import { EditOrderDialog } from '@/components/Dialog'
 import NullData from '@/components/NullData'
+import Status from '@/components/Status'
 import { DataTable } from '@/components/Table'
+import { formatPrice } from '@/utils/formatPrice'
 import { GridColDef } from '@mui/x-data-grid'
 import { Flex, Text } from '@radix-ui/themes'
 import { useEffect, useState } from 'react'
 import { FaCheckToSlot } from 'react-icons/fa6'
+import { MdAccessTimeFilled, MdCancel, MdDeliveryDining, MdDone, MdRemoveRedEye } from 'react-icons/md'
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', width: 220 },
   {
-    field: 'userId',
-    headerName: 'UserID',
-    width: 220
+    field: 'amount',
+    headerName: 'Amount(USD)',
+    width: 130,
+    renderCell: (param) => {
+      return <div className='font-bold text-slate-800'>{formatPrice(param.row.totalPrice)}</div>
+    }
   },
   {
-    field: 'paymentMethodId',
-    type: 'string',
-    headerName: 'Payment Method',
-    width: 150
+    field: 'deliveryStatus',
+    headerName: 'Delivery Status',
+    width: 150,
+    renderCell: (param) => {
+      return (
+        <div>
+          {param.row.deliveryStatus === 'PENDING' ? (
+            <Status text='pending' icon={MdAccessTimeFilled} bg='bg-slate-200' color='text-slate-700' />
+          ) : param.row.deliveryStatus === 'DISPATCHED' ? (
+            <Status text='dispatch' icon={MdDeliveryDining} bg='bg-purple-200' color='text-purple-700' />
+          ) : param.row.deliveryStatus === 'DELIVERED' ? (
+            <Status text='delivered' icon={MdDone} bg='bg-green-200' color='text-green-700' />
+          ) : (
+            <></>
+          )}
+        </div>
+      )
+    }
   },
   {
     field: 'status',
     type: 'string',
     headerName: 'Order Status',
-    width: 200
-  },
-  {
-    field: 'amount',
-    headerName: 'Amount(USD)',
-    width: 130,
-    type: 'string'
+    width: 150,
+    renderCell: (param) => {
+      return (
+        <div>
+          {param.row.status === 'PENDING' ? (
+            <Status text='pending' icon={MdAccessTimeFilled} bg='bg-slate-200' color='text-slate-700' />
+          ) : param.row.status === 'COMPLETED' ? (
+            <Status text='completed' icon={MdDone} bg='bg-green-200' color='text-green-700' />
+          ) : param.row.status === 'CANCEL' ? (
+            <Status text='cancel' icon={MdCancel} bg='bg-green-200' color='text-green-700' />
+          ) : (
+            <></>
+          )}
+        </div>
+      )
+    }
   },
   {
     field: 'orderDate',
@@ -39,6 +69,25 @@ const columns: GridColDef[] = [
     width: 200,
     type: 'string'
   }
+  // {
+  //   field: 'action',
+  //   headerName: 'Action',
+  //   width: 150,
+  //   renderCell: (param) => {
+  //     console.log('param: ', param)
+  //     return (
+  //       <div className='flex justify-between gap-4 w-full'>
+  //         <ActionBtn
+  //           icon={MdRemoveRedEye}
+  //           onClick={() => {
+  //             // console.log(`order/${param.row.id}`);
+  //             // router.push(`order/${param.row.id}`);
+  //           }}
+  //         />
+  //       </div>
+  //     )
+  //   }
+  // }
 ]
 
 const cardStatus: any[] = [
@@ -49,15 +98,15 @@ const cardStatus: any[] = [
 ]
 
 const OrderPage = () => {
-  const editOrder = (data: any) => <EditOrderDialog varient='EDIT' dataProps={data} />
+  const editOrder = (id: string) => <EditOrderDialog orderId={id} />
   const [data, setData] = useState<Order[]>([])
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await orderApi.getAll()
-        console.log(response.data.data.content)
-        setData(response.data.data.content)
+        console.log(response.data)
+        setData(response.data)
       } catch (error) {
         console.error('Error fetching data:', error)
       }

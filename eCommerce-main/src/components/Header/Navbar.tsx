@@ -3,7 +3,7 @@ import { Navigation } from '.';
 import MaxWidthWrapper from '../ui/MaxWidthWrapper';
 import NavItems from './NavItems';
 interface NavbarProps {
-  categories: Navigation[];
+  categories: Navigation[] | undefined;
 }
 
 const Navbar = ({ categories }: NavbarProps) => {

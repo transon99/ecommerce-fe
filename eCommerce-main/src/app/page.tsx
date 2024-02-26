@@ -8,23 +8,24 @@ const heroData: string[] = ['', '', ''];
 interface ProductReel {
   title: string;
   href: string;
-  products: Product[] | undefined;
+  products: ProductResponse[] | undefined;
 }
 
 export default async function Home() {
   const baseCatListRes = await getBaseCategoryAction();
 
-  let productReels: ProductReel[] = [];
-
-  baseCatListRes.data.map((category: Category) => {
-    productReels?.push({
-      title: category.name,
-      href: `/${category.id}`,
-      products: category.products,
-    });
-  });
+  const productReels: ProductReel[] = baseCatListRes.data.map(
+    (category: Category) => {
+      return {
+        title: category.name,
+        href: `category/${category.name}?id=${category.id}`,
+        products: category.products,
+      };
+    }
+  );
 
   console.log('productReels', productReels);
+  console.log('baseCatListRes', baseCatListRes);
 
   return (
     <>

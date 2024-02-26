@@ -1,6 +1,7 @@
 import Heading from '@/components/Heading';
 import Cookies from 'js-cookie';
 import { useState } from 'react';
+import { useSession, signIn, signOut } from 'next-auth/react';
 
 import { FieldValues, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
@@ -14,6 +15,7 @@ import { useRouter } from 'next/navigation';
 import Input from '@/components/Input/Input';
 import { rules } from '@/utils/rules';
 import { CgSpinner } from 'react-icons/cg';
+import { AiOutlineFacebook } from 'react-icons/ai';
 
 type LoginFormProps = {};
 
@@ -47,9 +49,34 @@ const LoginForm = (props: LoginFormProps) => {
       toast.error(response.data.message);
     }
   };
+
+  const handleLoginWithFacebook = async (data: any) => {
+    setIsLoading(true);
+    signIn('google', { callbackUrl: routes.home });
+    setIsLoading(false);
+    // if (response.data.status === 'OK') {
+    //   Cookies.set('accessToken', response.data.accessToken, { expires: 100 });
+    //   Cookies.set('refreshToken', response.data.refreshToken, { expires: 100 });
+    //   Cookies.set('isLogined', true.toString());
+    //   setIsLogined(true);
+    //   router.push(routes.home);
+    // } else {
+    //   toast.error(response.data.message);
+    // }
+  };
+
   return (
     <>
       <Heading title="Sign in to your account" center />
+      <hr className="bg-slate-300 w-full h-px" />
+      <Button
+        variant={'outline'}
+        className="w-full py-6 border-[2px]"
+        onClick={handleLoginWithFacebook}
+      >
+        <AiOutlineFacebook size={20} />
+        <p className="ml-3 font-bold">Sign in with Facebook</p>
+      </Button>
       <hr className="bg-slate-300 w-full h-px" />
       <form
         className="space-y-4 md:space-y-6"
@@ -87,7 +114,6 @@ const LoginForm = (props: LoginFormProps) => {
                 aria-describedby="remember"
                 type="checkbox"
                 className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800"
-                required
               />
             </div>
             <div className="ml-3 text-sm">

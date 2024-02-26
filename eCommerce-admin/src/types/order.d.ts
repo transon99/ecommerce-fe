@@ -1,17 +1,42 @@
+// interface Order {
+//   id: string
+
+//   userId: string
+
+//   cartId: string
+
+//   paymentMethodId: string
+
+//   isAccept: boolean
+
+//   status: string
+
+//   totalPrice: number
+
+//   orderDate: string
+// }
+
+interface OrderItemDto {
+  quantity: number
+
+  productId: string | undefined
+  userId?: string | undefined
+}
+
 interface Order {
-  id: string
+  id: string | undefined
 
-  userId: string
+  orderDate: Date
 
-  cartId: string
+  totalPrice: number | undefined
 
-  paymentMethodId: string
+  paymentMethodId: string | undefined
 
-  isAccept: boolean
+  status: string | undefined
 
-  status: string
+  deliveryStatus: string | undefined
 
-  totalPrice: number
+  userId: string | undefined
 
-  orderDate: string
+  orderItems: OrderItemDto[]
 }

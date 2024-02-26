@@ -29,7 +29,7 @@ const ProductImage = ({
               }`}
             >
               <Image
-                src={imageUrl.thumbnailUrl}
+                src={imageUrl.imageUrl}
                 alt="preview image"
                 fill
                 className="object-contain"
@@ -42,7 +42,7 @@ const ProductImage = ({
         <Image
           fill
           className="w-full h-full object-contain max-h-[500px] min-h-[300px] sm:min-h-[400px]"
-          src={cartProduct.selectedImg.thumbnailUrl}
+          src={cartProduct.selectedImg.imageUrl}
           alt={cartProduct.name}
         />
       </div>

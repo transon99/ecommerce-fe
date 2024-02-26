@@ -1,10 +1,11 @@
 import DataTable from '@/components/Table/DataTable'
 import { GridColDef } from '@mui/x-data-grid'
-import { userRows } from '../../data'
 import { Text } from '@radix-ui/themes'
 import EditUserDialog from '@/components/Dialog/EditDialog/EditUserDialog'
 import { useEffect, useState } from 'react'
 import userApi from '@/apis/userApi'
+import avatar from '@/assets/image/avatar/avatar-trang-4.jpg'
+import NullData from '@/components/NullData'
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', width: 90 },
@@ -13,7 +14,7 @@ const columns: GridColDef[] = [
     headerName: 'Avatar',
     width: 100,
     renderCell: (params) => {
-      return <img className='rounded-full w-10 h-10' src={params.row.img || '/noavatar.png'} alt='' />
+      return <img className='rounded-full w-10 h-10 overflow-hidden' src={params.row.img || avatar} alt='' />
     }
   },
   {
@@ -47,8 +48,8 @@ const columns: GridColDef[] = [
     type: 'string'
   },
   {
-    field: 'actived',
-    headerName: 'Actived',
+    field: 'enabled',
+    headerName: 'Enabled',
     width: 100,
     type: 'boolean'
   },
@@ -67,8 +68,8 @@ const UserPage = () => {
     const fetchData = async () => {
       try {
         const response = await userApi.getAll()
-        console.log(response.data.data.content)
-        setData(response.data.data.content)
+        console.log(response.data)
+        setData(response.data)
       } catch (error) {
         console.error('Error fetching data:', error)
       }
@@ -96,7 +97,11 @@ const UserPage = () => {
           </Text>
         </div>
         <div className='mt-5 rounded-xl'>
-          <DataTable slug='users' columns={columns} rows={userRows} editBtn={editUser} />
+          {data.length === 0 ? (
+            <NullData title="DON'T HAVE ANY CATEGORY YET" />
+          ) : (
+            <DataTable slug='users' columns={columns} rows={data} editBtn={editUser} />
+          )}
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
-import NextAuth from "next-auth";
-import FacebookProvider from "next-auth/providers/facebook";
-import GoogleProvider from "next-auth/providers/google";
+import NextAuth from 'next-auth';
+import FacebookProvider from 'next-auth/providers/facebook';
+import GoogleProvider from 'next-auth/providers/google';
 
 const handler = NextAuth({
   providers: [
@@ -8,10 +8,10 @@ const handler = NextAuth({
       clientId: process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_ID as string,
       clientSecret: process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_SECRET as string,
     }),
-    GoogleProvider({
-      clientId: process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_ID as string,
-      clientSecret: process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_SECRET as string,
-    }),
+    // GoogleProvider({
+    //   clientId: process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_ID as string,
+    //   clientSecret: process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_SECRET as string,
+    // }),
   ],
   callbacks: {
     async jwt({ token, user, account }) {
@@ -27,7 +27,7 @@ const handler = NextAuth({
       return session;
     },
     async signIn({ user, account, profile, email, credentials }) {
-      console.log("profile", profile);
+      console.log('profile', profile);
       return true;
     },
   },

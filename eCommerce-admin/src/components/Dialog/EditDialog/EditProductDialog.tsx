@@ -185,7 +185,7 @@ const EditProductDialog = ({ productId, brandOptions, categoryOptions }: PropTyp
           variant='outline'
           color='indigo'
           radius='full'
-          className='hover:cursor-pointer hover:bg-[#3E5093] hover:text-white col'
+          className='hover:cursor-pointer hover:bg-[#3E5093] hover:text-white col w-full'
         >
           <FaPencil />
           Edit

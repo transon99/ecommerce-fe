@@ -1,12 +1,8 @@
-import React from "react";
+import React from 'react';
 
-type FilterProps = {
-  children: React.ReactNode;
-};
-
-const Filter = ({ children }: FilterProps) => {
+const Filter = () => {
   return (
-    <div className="m-2 max-w-screen-md">
+    <div className="my-2 ">
       <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
         <h2 className="text-stone-700 text-xl font-bold">Apply filters</h2>
         <p className="mt-1 text-sm">Use filters to further refine search</p>

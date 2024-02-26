@@ -4,6 +4,7 @@ import { AddProductDialog } from './Dialog'
 import EditProductDialog from './Dialog/EditDialog/EditProductDialog'
 import productApi from '@/apis/productApi'
 import { SUCCESS_STATUS } from '@/constant/commonConstant'
+import { formatPrice } from '@/utils/formatPrice'
 
 interface CardItem {
   product: Product
@@ -21,22 +22,17 @@ const CardItem = ({ product, brandOptions, categoryOptions }: CardItem) => {
     }
   }
 
-  const salePrice = (1 - (product?.discount ?? 0) / 100) * (product?.price ?? 0)
   return (
     <div className='bg-secondary' key={product.id}>
       <Card size='2' className='!bg-secondary text-primary'>
         <Flex direction={'column'} gap={'3'}>
           <img
-            src={product?.thumbnailUrls[0]?.thumbnailUrl}
+            src={product?.imageUrls[0]?.imageUrl}
             alt='Bold typography'
             style={{
-              display: 'block',
-              objectFit: 'cover',
-              width: '100%',
-              height: 140,
               backgroundColor: 'var(--gray-5)'
             }}
-            className='rounded-lg'
+            className='rounded-lg aspect-square block object-cover'
           />
           <Flex direction={'column'} gap={'2'}>
             <Link to='/'>
@@ -55,11 +51,11 @@ const CardItem = ({ product, brandOptions, categoryOptions }: CardItem) => {
               {`Regular price : ${product.price}`}
             </Text>
             <Text as='p' size='3' weight={'medium'} className='text-white leading-[1.4]'>
-              {`Sale price : ${salePrice}`}
+              {`Sale price : ${formatPrice(product?.salePrice)}`}
             </Text>
           </Flex>
         </Flex>
-        <div className='grid grid-cols-2 gap-1.5 mt-4'>
+        <div className='grid grid-cols-2 gap-4 mt-4'>
           <EditProductDialog productId={product.id} categoryOptions={categoryOptions} brandOptions={brandOptions} />
 
           <Button

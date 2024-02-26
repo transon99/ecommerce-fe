@@ -8,6 +8,6 @@ export const API_URL_BANNER = '/api/v1/product-service/banners'
 
 export const API_URL_PRODUCT = '/api/v1/product-service/products'
 
-export const API_URL_ORDER = '/api/v1/product-service/orders'
+export const API_URL_ORDER = '/api/v1/order-service/orders'
 
-export const API_URL_USER = '/api/v1/product-service/users'
+export const API_URL_USER = '/api/v1/auth-service/users'

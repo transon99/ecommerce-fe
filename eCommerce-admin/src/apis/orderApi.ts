@@ -14,8 +14,14 @@ const orderApi = {
       params
     })
   },
+  updateOrder: (data: any, id: string | undefined) => {
+    return axiosClient.put(`${url}/${id}`, data)
+  },
   getAll: () => {
-    return axiosClient.get(`${url}/all`)
+    return axiosClient.get(`${url}`)
+  },
+  getById: (id: string | undefined) => {
+    return axiosClient.get(`${url}/${id}`)
   },
   delete: (id: string) => {
     return axiosClient.delete(`${url}/${id}`)

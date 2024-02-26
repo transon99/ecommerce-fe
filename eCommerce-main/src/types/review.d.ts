@@ -7,7 +7,7 @@ interface Review {
 
   user: UserInfo;
 
-  product: Product;
+  product?: Product;
 
   createDate: Date;
 }
@@ -20,4 +20,16 @@ interface ReviewRequest {
   userId: string | undefined;
 
   productId: string | undefined;
+}
+
+interface ReviewReponse {
+  id: string;
+  rate: number | undefined;
+
+  content: string | undefined;
+
+  userId: string | undefined;
+
+  productId?: string | undefined;
+  createDate: Date;
 }

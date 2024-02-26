@@ -1,16 +1,17 @@
-"use client";
+'use client';
 
-import reviewApi from "@/apis/reviewApi";
-import Heading from "@/components/Heading";
-import TextArea from "@/components/Input/TextArea";
-import { Button } from "@/components/ui/button";
-import { SUCCESS_STATUS } from "@/constant/commonConstant";
-import { useUser } from "@/store/useUser";
-import { Rating } from "@mui/material";
-import { useRouter } from "next/navigation";
-import React, { useState } from "react";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import { toast } from "react-toastify";
+import reviewApi from '@/apis/reviewApi';
+import Heading from '@/components/Heading';
+import TextArea from '@/components/Input/TextArea';
+import { Button } from '@/components/ui/button';
+import { SUCCESS_STATUS } from '@/constant/commonConstant';
+import { useUser } from '@/store/useUser';
+import { Rating } from '@mui/material';
+import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
+import { CgSpinner } from 'react-icons/cg';
+import { toast } from 'react-toastify';
 
 type AddRatingProps = {
   product: ProductResponse;
@@ -29,8 +30,8 @@ const AddRating = ({ product }: AddRatingProps) => {
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
-      comment: "",
-      rating: 0,
+      content: '',
+      rate: 0,
     },
   });
 
@@ -44,9 +45,9 @@ const AddRating = ({ product }: AddRatingProps) => {
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     setIsLoading(true);
-    if (data.rating === 0) {
+    if (data.rate === 0) {
       setIsLoading(false);
-      return toast.error("No rating selected");
+      return toast.error('No rating selected');
     }
     const ratingData: ReviewRequest = {
       rate: data.rate,
@@ -57,13 +58,14 @@ const AddRating = ({ product }: AddRatingProps) => {
 
     try {
       const res = await reviewApi.createReview(ratingData);
-      if (res.data.status === SUCCESS_STATUS) {
-        toast.success("Rating submitted");
-        router.refresh;
-        reset;
+      console.log('res', res);
+      if (res.status === SUCCESS_STATUS) {
+        toast.success('Rating submitted');
+        router.refresh();
+        reset();
       }
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error('Something went wrong');
     } finally {
     }
     setIsLoading(false);
@@ -78,7 +80,7 @@ const AddRating = ({ product }: AddRatingProps) => {
       <Heading title="Rate this product" />
       <Rating
         onChange={(event, newValue) => {
-          setCustomValue("rate", newValue);
+          setCustomValue('rate', newValue);
         }}
       />
       <TextArea
@@ -89,7 +91,12 @@ const AddRating = ({ product }: AddRatingProps) => {
         placeholder="Add your review"
       />
       <Button onClick={handleSubmit(onSubmit)}>
-        {isLoading ? "Loading..." : " Rate Product"}
+        {isLoading && (
+          <span className="animate-spin absolute left-0 px-2">
+            <CgSpinner />
+          </span>
+        )}
+        {isLoading ? 'Loading...' : ' Rate Product'}
       </Button>
     </div>
   );

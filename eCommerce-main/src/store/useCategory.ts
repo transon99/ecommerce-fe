@@ -1,20 +1,14 @@
 import categoryApi from '@/apis/categoryApi';
+import { SUCCESS_STATUS } from '@/constant/commonConstant';
 import { create } from 'zustand';
 
 interface CategoryState {
   baseCategoryInfo: Category[] | undefined;
-  getBaseCategory: () => void;
   setbaseCategoryInfo: (categories: Category[]) => void;
 }
 
 export const useCategory = create<CategoryState>()((set) => ({
-  baseCategoryInfo: undefined,
-  getBaseCategory: async () => {
-    const response = await categoryApi.getBaseCategories();
-    console.log('Base categories', response);
-    if (response.status === 'OK')
-      return set(() => ({ baseCategoryInfo: response.data }));
-  },
+  baseCategoryInfo: [],
   setbaseCategoryInfo: (categories: Category[]) =>
     set(() => ({ baseCategoryInfo: categories })),
 }));

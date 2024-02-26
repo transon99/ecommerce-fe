@@ -16,6 +16,7 @@ type Props = {
 }
 
 const DataTable = (props: Props) => {
+  console.log('row', props.rows)
   const { editBtn } = props
 
   const handleDelete = async (id: string) => {
